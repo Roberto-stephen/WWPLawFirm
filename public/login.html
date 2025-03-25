@@ -7,7 +7,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="login-page">
   <div class="login-container">
     <div class="login-header">
       <div class="logo">
@@ -31,10 +31,12 @@
           <input type="password" id="password" class="form-control" placeholder="Masukkan password Anda" required>
         </div>
         
-        <button type="submit" class="btn btn-primary">
-          Login
-          <span id="login-loader" class="loader" style="display: none;"></span>
-        </button>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            Login
+            <span id="login-loader" class="loader" style="display: none;"></span>
+          </button>
+        </div>
       </form>
     </div>
     
@@ -44,20 +46,14 @@
     </div>
   </div>
   
+  <script src="js/api.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Periksa apakah sudah login
       const token = localStorage.getItem('token');
       if (token) {
-        // Cek tipe pengguna
-        const userType = localStorage.getItem('userType');
-        
         // Arahkan sesuai tipe pengguna
-        if (userType === 'admin' || userType === 'partner') {
-          window.location.href = 'admin-dashboard.html';
-        } else {
-          window.location.href = 'index.html';
-        }
+        redirectBasedOnUserType();
         return;
       }
       
@@ -85,6 +81,7 @@
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ email, password }),
+            credentials: 'include' // Untuk menyimpan cookie
           });
           
           const data = await response.json();
@@ -96,15 +93,11 @@
             localStorage.setItem('userType', data.type);
             
             // Arahkan sesuai tipe pengguna
-            if (data.type === 'admin' || data.type === 'partner') {
-              window.location.href = 'admin-dashboard.html';
-            } else {
-              window.location.href = 'index.html';
-            }
+            redirectBasedOnUserType();
           } else {
             // Tampilkan error
             alert.className = 'alert alert-danger';
-            alert.textContent = data.error || 'Login gagal. Periksa email dan password Anda.';
+            alert.textContent = data.error || data.message || 'Login gagal. Periksa email dan password Anda.';
             alert.style.display = 'block';
           }
         } catch (error) {
@@ -119,6 +112,24 @@
         }
       });
     });
+    
+    /**
+     * Redirect pengguna berdasarkan tipe user
+     */
+    function redirectBasedOnUserType() {
+      const userType = localStorage.getItem('userType');
+      
+      if (userType === 'admin' || userType === 'partner' || 
+          userType === 'associates' || userType === 'paralegal') {
+        window.location.href = 'admin-dashboard.html';
+      } else if (userType === 'client') {
+        window.location.href = 'index.html';
+      } else {
+        // Jika tipe user tidak dikenali, logout dan minta login ulang
+        localStorage.clear();
+        window.location.reload();
+      }
+    }
   </script>
 </body>
 </html>

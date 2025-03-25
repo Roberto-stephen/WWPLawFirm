@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Saya - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <style>
+    .profile-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 30px;
+    }
+    
+    .profile-sidebar {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    
+    .profile-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      object-fit: cover;
+      border: 5px solid #f5f5f5;
+    }
+    
+    .profile-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .profile-type {
+      color: #777;
+      margin-bottom: 20px;
+    }
+    
+    .profile-contact {
+      text-align: left;
+      margin-top: 20px;
+    }
+    
+    .profile-contact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .profile-contact-item i {
+      margin-right: 10px;
+      color: var(--primary-color);
+      width: 20px;
+      text-align: center;
+    }
+    
+    .profile-main {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .profile-section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .profile-section-title {
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .edit-button {
+      font-size: 14px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body class="profile-page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-balance-scale"></i>
+      <h1>WWP Law Firm</h1>
+    </div>
+    
+    <div class="menu-items">
+      <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Kasus Saya</div>
+      <div class="menu-items">
+        <a href="my-cases.html">
+          <i class="fas fa-briefcase"></i>
+          <span>Kasus</span>
+        </a>
+        <a href="my-documents.html">
+          <i class="fas fa-file-alt"></i>
+          <span>Dokumen</span>
+        </a>
+        <a href="my-appointments.html">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jadwal</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Akun</div>
+      <div class="menu-items">
+        <a href="profile.html" class="active">
+          <i class="fas fa-user"></i>
+          <span>Profil</span>
+        </a>
+        <a href="change-password.html">
+          <i class="fas fa-lock"></i>
+          <span>Ubah Password</span>
+        </a>
+        <a href="support.html">
+          <i class="fas fa-question-circle"></i>
+          <span>Bantuan</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Profil Saya</div>
+      <div class="user-menu">
+        <a href="notifications.html">
+          <i class="far fa-bell"></i>
+          <span id="notification-badge" class="notification-badge" style="display:none">0</span>
+        </a>
+        <a href="messages.html"><i class="far fa-envelope"></i></a>
+        <a href="profile.html">
+          <img id="user-avatar" src="https://via.placeholder.com/30" alt="User" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+          <span id="user-name">Client</span>
+        </a>
+        <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" style="padding: 0 30px;"></div>
+    
+    <div class="content">
+      <div class="profile-container">
+        <div class="profile-sidebar">
+          <img id="profile-avatar" src="https://via.placeholder.com/150" alt="Profile" class="profile-avatar">
+          <h2 id="profile-name" class="profile-name">Loading...</h2>
+          <div id="profile-type" class="profile-type">Client</div>
+          
+          <div class="profile-contact">
+            <div class="profile-contact-item">
+              <i class="fas fa-envelope"></i>
+              <span id="profile-email">loading@example.com</span>
+            </div>
+            <div class="profile-contact-item">
+              <i class="fas fa-phone"></i>
+              <span id="profile-phone">+62 xxx xxxx xxxx</span>
+            </div>
+            <div class="profile-contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="profile-address">Loading...</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="profile-main">
+          <div class="profile-section">
+            <h3 class="profile-section-title">
+              Informasi Profil
+              <button id="edit-profile-btn" class="btn btn-sm btn-outline edit-button">
+                <i class="fas fa-edit"></i> Edit Profil
+              </button>
+            </h3>
+            
+            <div id="profile-view" class="profile-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nama Lengkap</label>
+                  <div id="view-name" class="form-value">Loading...</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <div id="view-email" class="form-value">loading@example.com</div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nomor Telepon</label>
+                  <div id="view-phone" class="form-value">+62 xxx xxxx xxxx</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tipe Akun</label>
+                  <div id="view-type" class="form-value">Client</div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Alamat</label>
+                <div id="view-address" class="form-value">Loading...</div>
+              </div>
+            </div>
+            
+            <div id="profile-edit" class="profile-edit-form" style="display: none;">
+              <form id="edit-profile-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="edit-name" class="form-label">Nama Lengkap</label>
+                    <input type="text" id="edit-name" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-email" class="form-label">Email</label>
+                    <input type="email" id="edit-email" class="form-control" required>
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="edit-phone" class="form-label">Nomor Telepon</label>
+                    <input type="text" id="edit-phone" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-avatar" class="form-label">Avatar</label>
+                    <input type="file" id="edit-avatar" class="form-control" accept="image/*">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-address" class="form-label">Alamat</label>
+                  <textarea id="edit-address" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="button" id="cancel-edit-btn" class="btn btn-outline">Batal</button>
+                  <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          
+          <div class="profile-section">
+            <h3 class="profile-section-title">Statistik Aktivitas</h3>
+            <div class="stats-cards">
+              <div class="card card-1">
+                <div class="card-header">Kasus Aktif</div>
+                <div id="active-cases-count" class="card-value">0</div>
+                <div class="card-label">Kasus</div>
+              </div>
+              
+              <div class="card card-2">
+                <div class="card-header">Dokumen</div>
+                <div id="documents-count" class="card-value">0</div>
+                <div class="card-label">Dokumen</div>
+              </div>
+              
+              <div class="card card-3">
+                <div class="card-header">Jadwal</div>
+                <div id="appointments-count" class="card-value">0</div>
+                <div class="card-label">Jadwal Mendatang</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script>
+    let userData = null;
+    
+    // Load user profile
+    async function loadUserProfile() {
+      try {
+        // Get user profile from API
+        userData = await API.crm.listSelectedUser('self');
+        
+        // Update profile information
+        updateProfileView();
+        
+        // Load statistics
+        loadUserStatistics();
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        showAlert('Gagal memuat data profil', 'danger');
+      }
+    }
+    
+    // Update profile view with user data
+    function updateProfileView() {
+      if (!userData) return;
+      
+      // Update sidebar
+      document.getElementById('profile-name').textContent = userData.username;
+      document.getElementById('profile-type').textContent = formatUserType(userData.type);
+      document.getElementById('profile-email').textContent = userData.email;
+      document.getElementById('profile-phone').textContent = userData.number;
+      document.getElementById('profile-address').textContent = userData.address;
+      
+      // Update avatar if available
+      if (userData.avatar_url) {
+        document.getElementById('profile-avatar').src = userData.avatar_url;
+        document.getElementById('user-avatar').src = userData.avatar_url;
+      }
+      
+      // Update view form
+      document.getElementById('view-name').textContent = userData.username;
+      document.getElementById('view-email').textContent = userData.email;
+      document.getElementById('view-phone').textContent = userData.number;
+      document.getElementById('view-type').textContent = formatUserType(userData.type);
+      document.getElementById('view-address').textContent = userData.address;
+      
+      // Update edit form
+      document.getElementById('edit-name').value = userData.username;
+      document.getElementById('edit-email').value = userData.email;
+      document.getElementById('edit-phone').value = userData.number;
+      document.getElementById('edit-address').value = userData.address;
+    }
+    
+    // Load user statistics
+    async function loadUserStatistics() {
+      try {
+        // Get cases, documents, and appointments
+        const [cases, documents, appointmentsResponse] = await Promise.all([
+          API.cases.getCases(),
+          API.documents.getAllDocuments(),
+          API.appointments.getAppointments()
+        ]);
+        
+        // Count active cases
+        const activeCases = cases.filter(c => c.case_status !== 'Closed');
+        document.getElementById('active-cases-count').textContent = activeCases.length;
+        
+        // Count documents
+        document.getElementById('documents-count').textContent = documents.length;
+        
+        // Count upcoming appointments
+        const now = new Date();
+        const appointments = appointmentsResponse.appointments || [];
+        const upcomingAppointments = appointments.filter(a => 
+          a.status === 'scheduled' && new Date(a.dateStart) >= now
+        );
+        document.getElementById('appointments-count').textContent = upcomingAppointments.length;
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        document.getElementById('active-cases-count').textContent = '0';
+        document.getElementById('documents-count').textContent = '0';
+        document.getElementById('appointments-count').textContent = '0';
+      }
+    }
+    
+    // Format user type for display
+    function formatUserType(type) {
+      switch (type) {
+        case 'admin': return 'Administrator';
+        case 'partner': return 'Partner';
+        case 'associates': return 'Associate';
+        case 'paralegal': return 'Paralegal';
+        case 'client': return 'Klien';
+        default: return type;
+      }
+    }
+    
+    // Update user profile
+    async function updateUserProfile(formData) {
+      try {
+        // Show loading indicator
+        showAlert('Memperbarui profil...', 'info');
+        
+        // Send update to API
+        const updatedUser = await API.crm.updateUser('self', formData);
+        
+        // Update local user data
+        userData = updatedUser;
+        
+        // Update profile view
+        updateProfileView();
+        
+        // Show success message
+        showAlert('Profil berhasil diperbarui', 'success');
+        
+        // Switch back to view mode
+        toggleEditMode(false);
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showAlert('Gagal memperbarui profil', 'danger');
+      }
+    }
+    
+    // Toggle between view and edit mode
+    function toggleEditMode(isEdit) {
+      if (isEdit) {
+        document.getElementById('profile-view').style.display = 'none';
+        document.getElementById('profile-edit').style.display = 'block';
+        document.getElementById('edit-profile-btn').style.display = 'none';
+      } else {
+        document.getElementById('profile-view').style.display = 'block';
+        document.getElementById('profile-edit').style.display = 'none';
+        document.getElementById('edit-profile-btn').style.display = 'inline-block';
+      }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Cek otentikasi
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
+      
+      // Load user profile
+      await loadUserProfile();
+      
+      // Set up event listeners
+      document.getElementById('edit-profile-btn').addEventListener('click', () => {
+        toggleEditMode(true);
+      });
+      
+      document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+        toggleEditMode(false);
+        // Reset form values to match userData
+        updateProfileView();
+      });
+      
+      document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Create object with form data
+        const formData = {
+          username: document.getElementById('edit-name').value,
+          email: document.getElementById('edit-email').value,
+          number: document.getElementById('edit-phone').value,
+          address: document.getElementById('edit-address').value
+        };
+        
+        // Update profile
+        await updateUserProfile(formData);
+      });
+    });
+  </script>
+        

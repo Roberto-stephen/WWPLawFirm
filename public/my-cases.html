@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasus Saya - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="case-page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-balance-scale"></i>
+      <h1>WWP Law Firm</h1>
+    </div>
+    
+    <div class="menu-items">
+      <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Kasus Saya</div>
+      <div class="menu-items">
+        <a href="my-cases.html" class="active">
+          <i class="fas fa-briefcase"></i>
+          <span>Kasus</span>
+        </a>
+        <a href="my-documents.html">
+          <i class="fas fa-file-alt"></i>
+          <span>Dokumen</span>
+        </a>
+        <a href="my-appointments.html">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jadwal</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Akun</div>
+      <div class="menu-items">
+        <a href="profile.html">
+          <i class="fas fa-user"></i>
+          <span>Profil</span>
+        </a>
+        <a href="change-password.html">
+          <i class="fas fa-lock"></i>
+          <span>Ubah Password</span>
+        </a>
+        <a href="support.html">
+          <i class="fas fa-question-circle"></i>
+          <span>Bantuan</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Kasus Saya</div>
+      <div class="user-menu">
+        <a href="notifications.html">
+          <i class="far fa-bell"></i>
+          <span id="notification-badge" class="notification-badge" style="display:none">0</span>
+        </a>
+        <a href="messages.html"><i class="far fa-envelope"></i></a>
+        <a href="profile.html">
+          <img id="user-avatar" src="https://via.placeholder.com/30" alt="User" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+          <span id="user-name">Client</span>
+        </a>
+        <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" style="padding: 0 30px;"></div>
+    
+    <div class="content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Daftar Kasus</div>
+          <div class="panel-actions">
+            <div class="search-box">
+              <input type="text" id="case-search" class="form-control" placeholder="Cari kasus...">
+              <i class="fas fa-search"></i>
+            </div>
+            <select id="status-filter" class="form-control">
+              <option value="all">Semua Status</option>
+              <option value="Open">Aktif</option>
+              <option value="Pending">Pending</option>
+              <option value="Closed">Selesai</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel-body">
+          <table id="cases-table">
+            <thead>
+              <tr>
+                <th>Judul Kasus</th>
+                <th>Tipe</th>
+                <th>Status</th>
+                <th>Prioritas</th>
+                <th>Pengacara</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="6" class="text-center">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="pagination-container">
+            <button id="prev-page" class="btn btn-sm btn-outline"><i class="fas fa-chevron-left"></i> Sebelumnya</button>
+            <div class="pagination-info">Halaman <span id="current-page">1</span> dari <span id="total-pages">1</span></div>
+            <button id="next-page" class="btn btn-sm btn-outline">Berikutnya <i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script>
+    // Variables for pagination
+    let allCases = [];
+    let filteredCases = [];
+    let currentPage = 1;
+    const casesPerPage = 10;
+    
+    // Load all client cases
+    async function loadClientCases() {
+      try {
+        showLoading('cases-table');
+        
+        // Get cases from API
+        allCases = await API.cases.getCases();
+        
+        // Apply filter if any
+        applyFilters();
+        
+        hideLoading('cases-table');
+      } catch (error) {
+        console.error('Error loading cases:', error);
+        showAlert('Gagal memuat data kasus', 'danger');
+        hideLoading('cases-table');
+      }
+    }
+    
+    // Apply filters and search
+    function applyFilters() {
+      const statusFilter = document.getElementById('status-filter').value;
+      const searchTerm = document.getElementById('case-search').value.toLowerCase();
+      
+      // Filter cases
+      filteredCases = allCases.filter(caseItem => {
+        const matchesStatus = statusFilter === 'all' || caseItem.case_status === statusFilter;
+        const matchesSearch = 
+          caseItem.case_title.toLowerCase().includes(searchTerm) || 
+          caseItem.case_description.toLowerCase().includes(searchTerm) ||
+          caseItem.case_type.toLowerCase().includes(searchTerm);
+        
+        return matchesStatus && matchesSearch;
+      });
+      
+      // Update pagination
+      updatePagination();
+      
+      // Render current page
+      renderCurrentPage();
+    }
+    
+    // Update pagination controls
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredCases.length / casesPerPage) || 1;
+      
+      // Update pagination text
+      document.getElementById('current-page').textContent = currentPage;
+      document.getElementById('total-pages').textContent = totalPages;
+      
+      // Enable/disable pagination buttons
+      document.getElementById('prev-page').disabled = currentPage <= 1;
+      document.getElementById('next-page').disabled = currentPage >= totalPages;
+      
+      // Reset current page if it's beyond total pages
+      if (currentPage > totalPages) {
+        currentPage = 1;
+        document.getElementById('current-page').textContent = currentPage;
+      }
+    }
+    
+    // Render current page of cases
+    function renderCurrentPage() {
+      const tableBody = document.querySelector('#cases-table tbody');
+      tableBody.innerHTML = '';
+      
+      // Calculate start and end indices
+      const startIndex = (currentPage - 1) * casesPerPage;
+      const endIndex = Math.min(startIndex + casesPerPage, filteredCases.length);
+      
+      // Get cases for current page
+      const casesOnPage = filteredCases.slice(startIndex, endIndex);
+      
+      if (casesOnPage.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center">Tidak ada kasus ditemukan</td>
+          </tr>
+        `;
+        return;
+      }
+      
+      // Render each case
+      casesOnPage.forEach(caseItem => {
+        const row = document.createElement('tr');
+        
+        // Status badge class
+        let statusClass = 'badge-info';
+        if (caseItem.case_status === 'Open') statusClass = 'badge-success';
+        if (caseItem.case_status === 'Closed') statusClass = 'badge-danger';
+        if (caseItem.case_status === 'Pending') statusClass = 'badge-warning';
+        
+        // Priority badge class
+        let priorityClass = 'badge-info';
+        if (caseItem.case_priority === 'High') priorityClass = 'badge-danger';
+        if (caseItem.case_priority === 'Medium') priorityClass = 'badge-warning';
+        if (caseItem.case_priority === 'Low') priorityClass = 'badge-success';
+        
+        // Find lead lawyer
+        const leadLawyer = caseItem.case_member_list.find(
+          member => (member.case_member_type === 'partner' || member.case_member_type === 'associates') && 
+                    member.case_member_role === 'Lead'
+        );
+        
+        const lawyerName = leadLawyer ? leadLawyer.case_member_name || 'Assigned' : '-';
+        
+        row.innerHTML = `
+          <td>${caseItem.case_title}</td>
+          <td>${caseItem.case_type}</td>
+          <td><span class="badge ${statusClass}">${caseItem.case_status}</span></td>
+          <td><span class="badge ${priorityClass}">${caseItem.case_priority}</span></td>
+          <td>${lawyerName}</td>
+          <td>
+            <a href="case-detail.html?id=${caseItem._id}" class="btn btn-primary btn-sm">
+              <i class="fas fa-eye"></i> Detail
+            </a>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Cek otentikasi
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
+      
+      // Cek apakah pengguna adalah client
+      const userType = localStorage.getItem('userType');
+      if (userType !== 'client') {
+        window.location.href = 'admin-dashboard.html';
+        return;
+      }
+      
+      // Load cases
+      await loadClientCases();
+      
+      // Add event listeners for filters and pagination
+      document.getElementById('status-filter').addEventListener('change', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+      
+      document.getElementById('case-search').addEventListener('input', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+      
+      document.getElementById('prev-page').addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePagination();
+          renderCurrentPage();
+        }
+      });
+      
+      document.getElementById('next-page').addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredCases.length / casesPerPage) || 1;
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePagination();
+          renderCurrentPage();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

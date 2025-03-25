@@ -71,7 +71,7 @@
     </div>
     
     <!-- Admin Only Section -->
-    <div class="menu-section">
+    <div class="menu-section" data-role-access="admin,partner">
       <div class="menu-header">Admin</div>
       <div class="menu-items">
         <a href="user-management.html">
@@ -272,21 +272,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/auth-check.js"></script>
   <script>
     // Check if user is admin
     document.addEventListener('DOMContentLoaded', async () => {
-      const userType = localStorage.getItem('userType');
+      // Cek otentikasi
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
       
-      // If not admin or partner, redirect to client dashboard
-      if (userType !== 'admin' && userType !== 'partner') {
+      // Cek apakah pengguna adalah admin/partner/associates/paralegal
+      const userType = localStorage.getItem('userType');
+      if (userType === 'client') {
         window.location.href = 'index.html';
         return;
       }
       
-      // Set user name in header
-      const userName = localStorage.getItem('userName');
-      if (userName) {
-        document.getElementById('user-name').textContent = userName;
+      // Sembunyikan beberapa fitur admin berdasarkan peran
+      if (userType !== 'admin' && userType !== 'partner') {
+        // Sembunyikan menu admin
+        const adminMenus = document.querySelectorAll('[data-role-access]');
+        adminMenus.forEach(menu => {
+          const allowedRoles = menu.getAttribute('data-role-access').split(',');
+          if (!allowedRoles.includes(userType)) {
+            menu.style.display = 'none';
+          }
+        });
       }
       
       // Load dashboard data

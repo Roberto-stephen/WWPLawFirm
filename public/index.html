@@ -429,6 +429,17 @@
     
     // Initialize page
     document.addEventListener('DOMContentLoaded', async () => {
+      // Cek otentikasi
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
+      
+      // Cek apakah pengguna adalah client
+      const userType = localStorage.getItem('userType');
+      if (userType !== 'client') {
+        window.location.href = 'admin-dashboard.html';
+        return;
+      }
+      
       // Load client data
       loadClientCases();
       loadClientAppointments();
