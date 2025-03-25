@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Klien - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <style>
+    /* Some client-specific styles */
+    .case-detail-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .case-progress {
+      height: 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+    
+    .case-progress-bar {
+      height: 100%;
+      background-color: var(--primary-color);
+      border-radius: 4px;
+    }
+    
+    .document-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .document-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .document-item:last-child {
+      border-bottom: none;
+    }
+    
+    .document-info {
+      flex: 1;
+    }
+    
+    .document-name {
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+    
+    .document-date {
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .appointment-item {
+      display: flex;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .appointment-item:last-child {
+      border-bottom: none;
+    }
+    
+    .appointment-date {
+      width: 70px;
+      text-align: center;
+      margin-right: 15px;
+    }
+    
+    .appointment-day {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    .appointment-month {
+      font-size: 12px;
+      color: #777;
+      text-transform: uppercase;
+    }
+    
+    .appointment-details {
+      flex: 1;
+    }
+    
+    .appointment-title {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    
+    .appointment-info {
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body class="dashboard-page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-balance-scale"></i>
+      <h1>WWP Law Firm</h1>
+    </div>
+    
+    <div class="menu-items">
+      <a href="index.html" class="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Kasus Saya</div>
+      <div class="menu-items">
+        <a href="my-cases.html">
+          <i class="fas fa-briefcase"></i>
+          <span>Kasus</span>
+        </a>
+        <a href="my-documents.html">
+          <i class="fas fa-file-alt"></i>
+          <span>Dokumen</span>
+        </a>
+        <a href="my-appointments.html">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jadwal</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Akun</div>
+      <div class="menu-items">
+        <a href="profile.html">
+          <i class="fas fa-user"></i>
+          <span>Profil</span>
+        </a>
+        <a href="change-password.html">
+          <i class="fas fa-lock"></i>
+          <span>Ubah Password</span>
+        </a>
+        <a href="support.html">
+          <i class="fas fa-question-circle"></i>
+          <span>Bantuan</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Dashboard Klien</div>
+      <div class="user-menu">
+        <a href="notifications.html">
+          <i class="far fa-bell"></i>
+          <span id="notification-badge" class="notification-badge" style="display:none">0</span>
+        </a>
+        <a href="messages.html"><i class="far fa-envelope"></i></a>
+        <a href="profile.html">
+          <img id="user-avatar" src="https://via.placeholder.com/30" alt="User" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+          <span id="user-name">Client</span>
+        </a>
+        <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" style="padding: 0 30px;"></div>
+    
+    <div class="content">
+      <div class="welcome-banner">
+        <h2>Selamat Datang di Portal Klien</h2>
+        <p>Pantau kasus, jadwal, dan dokumen Anda</p>
+      </div>
+      
+      <!-- Current Cases Section -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Kasus Aktif</div>
+          <a href="my-cases.html" class="btn btn-primary">Lihat Semua</a>
+        </div>
+        <div class="panel-body panel-body-padded">
+          <div id="active-cases-container">
+            <!-- Will be filled with active cases -->
+            <div class="loader-container">
+              <div class="loader"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Split view for appointments and documents -->
+      <div class="status-container">
+        <!-- Upcoming Appointments -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Jadwal Mendatang</div>
+            <a href="my-appointments.html" class="btn btn-primary">Lihat Semua</a>
+          </div>
+          <div class="panel-body panel-body-padded">
+            <div id="appointments-container">
+              <!-- Will be filled with appointments -->
+              <div class="loader-container">
+                <div class="loader"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Documents -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Dokumen Terbaru</div>
+            <a href="my-documents.html" class="btn btn-primary">Lihat Semua</a>
+          </div>
+          <div class="panel-body panel-body-padded">
+            <div id="documents-container" class="document-list">
+              <!-- Will be filled with documents -->
+              <div class="loader-container">
+                <div class="loader"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script>
+    // Load client's cases
+    async function loadClientCases() {
+      try {
+        const casesContainer = document.getElementById('active-cases-container');
+        casesContainer.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        
+        const cases = await API.cases.getCases();
+        
+        // Filter active cases
+        const activeCases = cases.filter(caseItem => caseItem.case_status !== 'Closed');
+        
+        if (activeCases.length === 0) {
+          casesContainer.innerHTML = '<p>Anda tidak memiliki kasus aktif saat ini.</p>';
+          return;
+        }
+        
+        casesContainer.innerHTML = '';
+        
+        // Show only first 2 cases
+        const casesToShow = activeCases.slice(0, 2);
+        
+        casesToShow.forEach(caseItem => {
+          // Calculate progress based on status
+          let progressPercent = 30;
+          if (caseItem.case_status === 'Pending') progressPercent = 60;
+          if (caseItem.case_status === 'Closed') progressPercent = 100;
+          
+          const caseCard = document.createElement('div');
+          caseCard.className = 'case-detail-card';
+          caseCard.innerHTML = `
+            <h3 style="margin-top: 0;">${caseItem.case_title}</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div>
+                <span class="badge ${caseItem.case_status === 'Open' ? 'badge-success' : 'badge-warning'}">${caseItem.case_status}</span>
+                <span class="badge ${caseItem.case_priority === 'High' ? 'badge-danger' : caseItem.case_priority === 'Medium' ? 'badge-warning' : 'badge-info'}">${caseItem.case_priority}</span>
+              </div>
+              <div>
+                <span style="color: #777;">Tipe: ${caseItem.case_type}</span>
+              </div>
+            </div>
+            <p>${caseItem.case_description.substring(0, 150)}${caseItem.case_description.length > 150 ? '...' : ''}</p>
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>Progress</span>
+                <span>${progressPercent}%</span>
+              </div>
+              <div class="case-progress">
+                <div class="case-progress-bar" style="width: ${progressPercent}%"></div>
+              </div>
+            </div>
+            <div style="text-align: right; margin-top: 15px;">
+              <a href="case-detail.html?id=${caseItem._id}" class="btn btn-primary">Lihat Detail</a>
+            </div>
+          `;
+          
+          casesContainer.appendChild(caseCard);
+        });
+        
+      } catch (error) {
+        console.error('Error loading cases:', error);
+        document.getElementById('active-cases-container').innerHTML = 
+          '<p>Terjadi kesalahan saat memuat kasus. Silakan coba lagi nanti.</p>';
+      }
+    }
+    
+    // Load client's appointments
+    async function loadClientAppointments() {
+      try {
+        const appointmentsContainer = document.getElementById('appointments-container');
+        appointmentsContainer.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        
+        const response = await API.appointments.getAppointments();
+        const appointments = response.appointments || [];
+        
+        // Filter future appointments
+        const now = new Date();
+        const futureAppointments = appointments.filter(appointment => 
+          appointment.status === 'scheduled' && new Date(appointment.dateStart) >= now
+        );
+        
+        // Sort by date (nearest first)
+        futureAppointments.sort((a, b) => new Date(a.dateStart) - new Date(b.dateStart));
+        
+        if (futureAppointments.length === 0) {
+          appointmentsContainer.innerHTML = '<p>Anda tidak memiliki jadwal mendatang.</p>';
+          return;
+        }
+        
+        appointmentsContainer.innerHTML = '';
+        
+        // Show only first 3 appointments
+        const appointmentsToShow = futureAppointments.slice(0, 3);
+        
+        appointmentsToShow.forEach(appointment => {
+          const appointmentDate = new Date(appointment.dateStart);
+          
+          const appointmentItem = document.createElement('div');
+          appointmentItem.className = 'appointment-item';
+          appointmentItem.innerHTML = `
+            <div class="appointment-date">
+              <div class="appointment-day">${appointmentDate.getDate()}</div>
+              <div class="appointment-month">${appointmentDate.toLocaleString('id-ID', { month: 'short' })}</div>
+            </div>
+            <div class="appointment-details">
+              <div class="appointment-title">${appointment.title}</div>
+              <div class="appointment-info">
+                <i class="fas fa-map-marker-alt"></i> ${appointment.location} &nbsp;&nbsp;
+                <i class="far fa-clock"></i> ${appointment.timeStart || '00:00'} - ${appointment.timeEnd || '00:00'}
+              </div>
+            </div>
+          `;
+          
+          appointmentsContainer.appendChild(appointmentItem);
+        });
+        
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        document.getElementById('appointments-container').innerHTML = 
+          '<p>Terjadi kesalahan saat memuat jadwal. Silakan coba lagi nanti.</p>';
+      }
+    }
+    
+    // Load client's documents
+    async function loadClientDocuments() {
+      try {
+        const documentsContainer = document.getElementById('documents-container');
+        documentsContainer.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        
+        const documents = await API.documents.getAllDocuments();
+        
+        // Sort by upload date (newest first)
+        documents.sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at));
+        
+        if (documents.length === 0) {
+          documentsContainer.innerHTML = '<p>Tidak ada dokumen terbaru.</p>';
+          return;
+        }
+        
+        documentsContainer.innerHTML = '';
+        
+        // Show only first 5 documents
+        const documentsToShow = documents.slice(0, 5);
+        
+        documentsToShow.forEach(doc => {
+          const documentItem = document.createElement('div');
+          documentItem.className = 'document-item';
+          documentItem.innerHTML = `
+            <div class="document-info">
+              <div class="document-name">${doc.doc_title}</div>
+              <div class="document-date">
+                <i class="fas fa-file-${getDocumentIcon(doc.doc_type)}"></i> ${doc.doc_type} &nbsp;&nbsp;
+                <i class="far fa-clock"></i> ${formatDate(doc.uploaded_at)}
+              </div>
+            </div>
+            <a href="${doc.doc_link_file}" target="_blank" class="btn btn-primary btn-sm">
+              <i class="fas fa-download"></i>
+            </a>
+          `;
+          
+          documentsContainer.appendChild(documentItem);
+        });
+        
+      } catch (error) {
+        console.error('Error loading documents:', error);
+        document.getElementById('documents-container').innerHTML = 
+          '<p>Terjadi kesalahan saat memuat dokumen. Silakan coba lagi nanti.</p>';
+      }
+    }
+    
+    // Helper to get document icon based on type
+    function getDocumentIcon(docType) {
+      switch (docType) {
+        case 'Contract':
+          return 'contract';
+        case 'Court Filing':
+          return 'legal';
+        case 'Evidence':
+          return 'image';
+        case 'Letter':
+          return 'alt';
+        case 'Report':
+          return 'chart-bar';
+        default:
+          return 'document';
+      }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load client data
+      loadClientCases();
+      loadClientAppointments();
+      loadClientDocuments();
+    });
+  </script>
+</body>
+</html>

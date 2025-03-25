@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Klien - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="client-page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-balance-scale"></i>
+      <h1>WWP Law Firm</h1>
+    </div>
+    
+    <div class="menu-items">
+      <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Manajemen Kasus</div>
+      <div class="menu-items">
+        <a href="clients.html" class="active">
+          <i class="fas fa-user-friends"></i>
+          <span>Klien</span>
+        </a>
+        <a href="lawyers.html">
+          <i class="fas fa-user-tie"></i>
+          <span>Pengacara</span>
+        </a>
+        <a href="cases.html">
+          <i class="fas fa-briefcase"></i>
+          <span>Kasus</span>
+        </a>
+        <a href="court.html">
+          <i class="fas fa-gavel"></i>
+          <span>Sidang</span>
+        </a>
+        <a href="documents.html">
+          <i class="fas fa-file-alt"></i>
+          <span>Dokumen</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Administrasi</div>
+      <div class="menu-items">
+        <a href="reports.html">
+          <i class="fas fa-chart-bar"></i>
+          <span>Laporan</span>
+        </a>
+        <a href="appointments.html">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jadwal</span>
+        </a>
+        <a href="finance.html">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>Keuangan</span>
+        </a>
+        <a href="settings.html">
+          <i class="fas fa-cog"></i>
+          <span>Pengaturan</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Manajemen Klien</div>
+      <div class="user-menu">
+        <a href="notifications.html">
+          <i class="far fa-bell"></i>
+          <span id="notification-badge" class="notification-badge" style="display:none">0</span>
+        </a>
+        <a href="messages.html"><i class="far fa-envelope"></i></a>
+        <a href="profile.html">
+          <img id="user-avatar" src="https://via.placeholder.com/30" alt="User" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+          <span id="user-name">Admin</span>
+        </a>
+        <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" style="padding: 0 30px;"></div>
+    
+    <div class="content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Daftar Klien</div>
+          <button class="btn btn-primary" onclick="openModal('add-client-modal')">
+            <i class="fas fa-plus"></i> Tambah Klien
+          </button>
+        </div>
+        <div class="panel-body">
+          <table id="clients-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Nomor Telepon</th>
+                <th>Alamat</th>
+                <th>Kasus Aktif</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="6" class="text-center">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Tambah Klien -->
+  <div id="add-client-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Tambah Klien Baru</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-client-form">
+          <div class="form-group">
+            <label for="username" class="form-label">Nama</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="number" class="form-label">Nomor Telepon</label>
+            <input type="text" id="number" name="number" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="address" class="form-label">Alamat</label>
+            <textarea id="address" name="address" class="form-control" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger modal-close">Batal</button>
+        <button class="btn btn-primary" id="save-client-btn">Simpan</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Load all clients
+    async function loadClients() {
+      try {
+        showLoading('clients-table');
+        
+        const clients = await API.crm.getUsers();
+        
+        const tableBody = document.querySelector('#clients-table tbody');
+        tableBody.innerHTML = '';
+        
+        if (clients.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center">Tidak ada klien ditemukan</td>
+            </tr>
+          `;
+        } else {
+          clients.forEach(client => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+              <td>${client.username}</td>
+              <td>${client.email}</td>
+              <td>${client.number}</td>
+              <td>${client.address}</td>
+              <td>-</td>
+              <td>
+                <a href="client-detail.html?id=${client._id}" class="btn btn-primary btn-sm">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <button class="btn btn-warning btn-sm edit-client-btn" data-id="${client._id}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-danger btn-sm delete-client-btn" data-id="${client._id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            `;
+            
+            tableBody.appendChild(row);
+          });
+          
+          // Add event listeners to edit and delete buttons
+          document.querySelectorAll('.edit-client-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const clientId = btn.getAttribute('data-id');
+              window.location.href = `client-edit.html?id=${clientId}`;
+            });
+          });
+          
+          document.querySelectorAll('.delete-client-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (confirm('Apakah Anda yakin ingin menghapus klien ini?')) {
+                const clientId = btn.getAttribute('data-id');
+                
+                try {
+                  await API.crm.deleteUser(clientId);
+                  showAlert('Klien berhasil dihapus', 'success');
+                  loadClients(); // Reload the clients
+                } catch (error) {
+                  showAlert(`Gagal menghapus klien: ${error.message}`, 'danger');
+                }
+              }
+            });
+          });
+        }
+        
+        hideLoading('clients-table');
+      } catch (error) {
+        console.error('Error loading clients:', error);
+        showAlert('Gagal memuat data klien', 'danger');
+        hideLoading('clients-table');
+      }
+    }
+    
+    // Save client
+    document.getElementById('save-client-btn').addEventListener('click', async () => {
+      const form = document.getElementById('add-client-form');
+      
+      // Check if form is valid
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      // Get client data
+      const clientData = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        number: document.getElementById('number').value,
+        address: document.getElementById('address').value,
+        password: document.getElementById('password').value,
+        type: 'client',
+        avatar_url: ''
+      };
+      
+      try {
+        await API.crm.createUser(clientData);
+        showAlert('Klien berhasil ditambahkan', 'success');
+        closeModal('add-client-modal');
+        loadClients(); // Reload the clients
+        
+        // Reset form
+        form.reset();
+      } catch (error) {
+        showAlert(`Gagal menambahkan klien: ${error.message}`, 'danger');
+      }
+    });
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
+      
+      // Load clients
+      loadClients();
+    });
+  </script>
+</body>
+</html>

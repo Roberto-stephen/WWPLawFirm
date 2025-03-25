@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <i class="fas fa-balance-scale"></i>
+        <h1>WWP Law Firm</h1>
+      </div>
+      <p>Sistem Manajemen Firma Hukum</p>
+    </div>
+    
+    <div class="login-body">
+      <div id="alert" class="alert" style="display: none;"></div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Masukkan password Anda" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          Login
+          <span id="login-loader" class="loader" style="display: none;"></span>
+        </button>
+      </form>
+    </div>
+    
+    <div class="login-footer">
+      <p>Belum memiliki akun? Hubungi administrator</p>
+      <p>&copy; 2025 WWP Law Firm. All rights reserved.</p>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Periksa apakah sudah login
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Cek tipe pengguna
+        const userType = localStorage.getItem('userType');
+        
+        // Arahkan sesuai tipe pengguna
+        if (userType === 'admin' || userType === 'partner') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          window.location.href = 'index.html';
+        }
+        return;
+      }
+      
+      const form = document.getElementById('login-form');
+      const alert = document.getElementById('alert');
+      const loader = document.getElementById('login-loader');
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Tampilkan loader
+        loader.style.display = 'inline-block';
+        
+        // Sembunyikan alert sebelumnya
+        alert.style.display = 'none';
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+          // Panggil API login
+          const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.token) {
+            // Simpan token dan info user
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userName', data.name);
+            localStorage.setItem('userType', data.type);
+            
+            // Arahkan sesuai tipe pengguna
+            if (data.type === 'admin' || data.type === 'partner') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'index.html';
+            }
+          } else {
+            // Tampilkan error
+            alert.className = 'alert alert-danger';
+            alert.textContent = data.error || 'Login gagal. Periksa email dan password Anda.';
+            alert.style.display = 'block';
+          }
+        } catch (error) {
+          // Tampilkan error
+          alert.className = 'alert alert-danger';
+          alert.textContent = 'Terjadi kesalahan saat mencoba login. Silakan coba lagi.';
+          alert.style.display = 'block';
+          console.error('Login error:', error);
+        } finally {
+          // Sembunyikan loader
+          loader.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Dokumen - WWP Law Firm</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="document-page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fas fa-balance-scale"></i>
+      <h1>WWP Law Firm</h1>
+    </div>
+    
+    <div class="menu-items">
+      <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Manajemen Kasus</div>
+      <div class="menu-items">
+        <a href="clients.html">
+          <i class="fas fa-user-friends"></i>
+          <span>Klien</span>
+        </a>
+        <a href="lawyers.html">
+          <i class="fas fa-user-tie"></i>
+          <span>Pengacara</span>
+        </a>
+        <a href="cases.html">
+          <i class="fas fa-briefcase"></i>
+          <span>Kasus</span>
+        </a>
+        <a href="court.html">
+          <i class="fas fa-gavel"></i>
+          <span>Sidang</span>
+        </a>
+        <a href="documents.html" class="active">
+          <i class="fas fa-file-alt"></i>
+          <span>Dokumen</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header">Administrasi</div>
+      <div class="menu-items">
+        <a href="reports.html">
+          <i class="fas fa-chart-bar"></i>
+          <span>Laporan</span>
+        </a>
+        <a href="appointments.html">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jadwal</span>
+        </a>
+        <a href="finance.html">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>Keuangan</span>
+        </a>
+        <a href="settings.html">
+          <i class="fas fa-cog"></i>
+          <span>Pengaturan</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">Manajemen Dokumen</div>
+      <div class="user-menu">
+        <a href="notifications.html">
+          <i class="far fa-bell"></i>
+          <span id="notification-badge" class="notification-badge" style="display:none">0</span>
+        </a>
+        <a href="messages.html"><i class="far fa-envelope"></i></a>
+        <a href="profile.html">
+          <img id="user-avatar" src="https://via.placeholder.com/30" alt="User" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+          <span id="user-name">Admin</span>
+        </a>
+        <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" style="padding: 0 30px;"></div>
+    
+    <div class="content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Daftar Dokumen</div>
+          <button class="btn btn-primary" onclick="openModal('add-document-modal')">
+            <i class="fas fa-plus"></i> Unggah Dokumen
+          </button>
+        </div>
+        <div class="panel-body">
+          <div style="margin-bottom: 20px;">
+            <label for="case-filter" class="form-label">Filter berdasarkan kasus:</label>
+            <select id="case-filter" class="form-control" style="max-width: 300px;">
+              <option value="">Semua Kasus</option>
+              <!-- Will be populated by JS -->
+            </select>
+          </div>
+          
+          <table id="documents-table">
+            <thead>
+              <tr>
+                <th>Judul</th>
+                <th>Kasus</th>
+                <th>Tipe</th>
+                <th>Diunggah Oleh</th>
+                <th>Tanggal Unggah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="6" class="text-center">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Unggah Dokumen -->
+  <div id="add-document-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Unggah Dokumen Baru</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-document-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="doc_title" class="form-label">Judul Dokumen</label>
+            <input type="text" id="doc_title" name="doc_title" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc_case_related" class="form-label">Kasus Terkait</label>
+            <select id="doc_case_related" name="doc_case_related" class="form-control" required>
+              <option value="">Pilih Kasus</option>
+              <!-- Will be populated by JS -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc_type" class="form-label">Tipe Dokumen</label>
+            <select id="doc_type" name="doc_type" class="form-control" required>
+              <option value="">Pilih Tipe</option>
+              <option value="Contract">Kontrak</option>
+              <option value="Court Filing">Dokumen Pengadilan</option>
+              <option value="Evidence">Bukti</option>
+              <option value="Letter">Surat</option>
+              <option value="Report">Laporan</option>
+              <option value="Other">Lainnya</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc_description" class="form-label">Deskripsi</label>
+            <textarea id="doc_description" name="doc_description" class="form-control" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="docUpload" class="form-label">Unggah File</label>
+            <input type="file" id="docUpload" name="docUpload" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Dapat Diakses Oleh:</label>
+            <div id="access-list" style="margin-top: 10px; max-height: 200px; overflow-y: auto;">
+              <!-- Will be populated by JS -->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger modal-close">Batal</button>
+        <button class="btn btn-primary" id="save-document-btn">Unggah</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Load all documents
+    async function loadDocuments(caseId = '') {
+      try {
+        showLoading('documents-table');
+        
+        let documents;
+        if (caseId) {
+          documents = await API.documents.getDocumentsByCaseId(caseId);
+        } else {
+          documents = await API.documents.getAllDocuments();
+        }
+        
+        const tableBody = document.querySelector('#documents-table tbody');
+        tableBody.innerHTML = '';
+        
+        if (documents.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center">Tidak ada dokumen ditemukan</td>
+            </tr>
+          `;
+        } else {
+          documents.forEach(doc => {
+            const row = document.createElement('tr');
+            
+            // Format upload date
+            const uploadDate = formatDate(doc.uploaded_at);
+            
+            row.innerHTML = `
+              <td>${doc.doc_title}</td>
+              <td>${doc.relatedCaseName ? doc.relatedCaseName.case_title : '-'}</td>
+              <td>${doc.doc_type}</td>
+              <td>${doc.uploadedByUserName ? doc.uploadedByUserName.username : '-'}</td>
+              <td>${uploadDate}</td>
+              <td>
+                <a href="${doc.doc_link_file}" target="_blank" class="btn btn-primary btn-sm">
+                  <i class="fas fa-download"></i>
+                </a>
+                <a href="document-detail.html?id=${doc._id}&cid=${doc.doc_case_related}" class="btn btn-info btn-sm">
+                  <i class="fas fa-eye"></i>
+                </a>
+                ${doc.canEdit ? `
+                <button class="btn btn-warning btn-sm edit-document-btn" data-id="${doc._id}" data-case="${doc.doc_case_related}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-danger btn-sm delete-document-btn" data-id="${doc._id}" data-case="${doc.doc_case_related}">
+                  <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+              </td>
+            `;
+            
+            tableBody.appendChild(row);
+          });
+          
+          // Add event listeners to edit and delete buttons
+          document.querySelectorAll('.edit-document-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const docId = btn.getAttribute('data-id');
+              const caseId = btn.getAttribute('data-case');
+              window.location.href = `document-edit.html?id=${docId}&cid=${caseId}`;
+            });
+          });
+          
+          document.querySelectorAll('.delete-document-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (confirm('Apakah Anda yakin ingin menghapus dokumen ini?')) {
+                const docId = btn.getAttribute('data-id');
+                const caseId = btn.getAttribute('data-case');
+                
+                try {
+                  await API.documents.deleteDocument(docId, caseId);
+                  showAlert('Dokumen berhasil dihapus', 'success');
+                  loadDocuments(document.getElementById('case-filter').value); // Reload with current filter
+                } catch (error) {
+                  showAlert(`Gagal menghapus dokumen: ${error.message}`, 'danger');
+                }
+              }
+            });
+          });
+        }
+        
+        hideLoading('documents-table');
+      } catch (error) {
+        console.error('Error loading documents:', error);
+        showAlert('Gagal memuat data dokumen', 'danger');
+        hideLoading('documents-table');
+      }
+    }
+    
+    // Load cases for filter dropdown
+    async function loadCasesForFilter() {
+      try {
+        const cases = await API.cases.getCases();
+        
+        const caseFilter = document.getElementById('case-filter');
+        const caseSelect = document.getElementById('doc_case_related');
+        
+        // Add cases to dropdowns
+        cases.forEach(caseItem => {
+          // For filter dropdown
+          const filterOption = document.createElement('option');
+          filterOption.value = caseItem._id;
+          filterOption.textContent = caseItem.case_title;
+          caseFilter.appendChild(filterOption);
+          
+          // For document upload form
+          const selectOption = document.createElement('option');
+          selectOption.value = caseItem._id;
+          selectOption.textContent = caseItem.case_title;
+          caseSelect.appendChild(selectOption);
+        });
+        
+        // Add event listener to filter dropdown
+        caseFilter.addEventListener('change', () => {
+          loadDocuments(caseFilter.value);
+        });
+      } catch (error) {
+        console.error('Error loading cases:', error);
+        showAlert('Gagal memuat data kasus', 'danger');
+      }
+    }
+    
+    // Load users for access list
+    async function loadUsersForAccessList() {
+      try {
+        const [clients, employees] = await Promise.all([
+          API.crm.getUsers(),
+          API.crm.getEmployees()
+        ]);
+        
+        const allUsers = [...clients, ...employees];
+        const accessList = document.getElementById('access-list');
+        
+        accessList.innerHTML = '';
+        
+        // Create "Select All" checkbox
+        const selectAllDiv = document.createElement('div');
+        selectAllDiv.className = 'form-check';
+        selectAllDiv.style.marginBottom = '10px';
+        selectAllDiv.innerHTML = `
+          <input type="checkbox" id="select-all-users" class="form-check-input">
+          <label for="select-all-users" class="form-check-label"><strong>Pilih Semua</strong></label>
+        `;
+        accessList.appendChild(selectAllDiv);
+        
+        // Create checkboxes for each user
+        allUsers.forEach(user => {
+          const div = document.createElement('div');
+          div.className = 'form-check';
+          div.innerHTML = `
+            <input type="checkbox" id="user-${user._id}" class="form-check-input user-checkbox" value="${user._id}">
+            <label for="user-${user._id}" class="form-check-label">${user.username} (${user.type})</label>
+          `;
+          accessList.appendChild(div);
+        });
+        
+        // Add event listener to "Select All" checkbox
+        document.getElementById('select-all-users').addEventListener('change', function() {
+          document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+            checkbox.checked = this.checked;
+          });
+        });
+      } catch (error) {
+        console.error('Error loading users:', error);
+        showAlert('Gagal memuat data pengguna', 'danger');
+      }
+    }
+    
+    // Load case members when case is selected
+    document.getElementById('doc_case_related').addEventListener('change', async function() {
+      const caseId = this.value;
+      
+      if (!caseId) return;
+      
+      try {
+        const caseData = await API.cases.getCase(caseId);
+        
+        // Check all users who are members of the case
+        document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+          checkbox.checked = caseData.case_member_list.some(member => member.case_member_id === checkbox.value);
+        });
+      } catch (error) {
+        console.error('Error loading case members:', error);
+        showAlert('Gagal memuat anggota kasus', 'danger');
+      }
+    });
+    
+    // Upload document
+    document.getElementById('save-document-btn').addEventListener('click', async () => {
+      const form = document.getElementById('add-document-form');
+      
+      // Check if form is valid
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      // Get selected users
+      const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(checkbox => checkbox.value);
+      
+      if (selectedUsers.length === 0) {
+        showAlert('Pilih minimal satu pengguna yang dapat mengakses dokumen ini', 'danger');
+        return;
+      }
+      
+      // Create FormData object
+      const formData = new FormData();
+      formData.append('doc_title', document.getElementById('doc_title').value);
+      formData.append('doc_case_related', document.getElementById('doc_case_related').value);
+      formData.append('doc_type', document.getElementById('doc_type').value);
+      formData.append('doc_description', document.getElementById('doc_description').value);
+      formData.append('docUpload', document.getElementById('docUpload').files[0]);
+      
+      // Add file size
+      const file = document.getElementById('docUpload').files[0];
+      formData.append('filesize', file.size);
+      
+      // Add access list
+      selectedUsers.forEach(userId => {
+        formData.append('can_be_access_by', userId);
+      });
+      
+      try {
+        showAlert('Sedang mengunggah dokumen...', 'info');
+        
+        await API.documents.createDocument(formData);
+        
+        showAlert('Dokumen berhasil diunggah', 'success');
+        closeModal('add-document-modal');
+        loadDocuments(document.getElementById('case-filter').value); // Reload with current filter
+        
+        // Reset form
+        form.reset();
+      } catch (error) {
+        showAlert(`Gagal mengunggah dokumen: ${error.message}`, 'danger');
+      }
+    });
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      const isAuthenticated = await checkAuthentication();
+      if (!isAuthenticated) return;
+      
+      // Load data
+      await Promise.all([
+        loadCasesForFilter(),
+        loadUsersForAccessList()
+      ]);
+      
+      // Load documents
+      loadDocuments();
+    });
+  </script>
+</body>
+</html>

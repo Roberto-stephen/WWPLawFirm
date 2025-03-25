@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "wwplawfirm",
+  "private_key_id": "16c04f45925c685943fcf37c64390eab80ce8eb2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDWwnZNtHpCH3n6\n36GEiyeh4gY3xU6k6Et101VY3vH2JdUD+Ng3VUROagzOo1Pl2exuR4tVNnhxUJnW\nepSyA+tjU/hHiDHRs7dTbmPXqaAb+YV4dwy3YcX2zR1jXcR66Gf6jyiltsrNh/GW\n1Z6/Ri9yI/NkRpwEGMefuNGkJpTTTRbQj8PDqrLS1oXz5ncqzCAK+giZ7LWnTmJI\nCdf/cnh5SsmYIkxKZOYBawzWLzTC+0+yqBuRf1hCINESOQ4vdqJs2YaEwYjbp3MD\ntbDNFy6xXCqny54mO/IfBFLw/b0ItsVmgzLJepEMFTwg88KQmgQPuLya3QoSz3YH\n56VOwn9fAgMBAAECggEAI9sn4WVmnC+hMA+yaezJ2y9flmQs8z+NiciVEVd30n8S\nh60+fE6SLv1p0f5W/aNa5DaxvrJvfYvVg4fH18jrvhPA+kB1AOweiaF+rf02LDWG\n4UwPJXb/lGs+ot5+9X5kDeNlB/Xy+knePi7AaHMRbN8vvehEGDMC8VnsNpnycyy3\nX2R2opNTPmuUWM/CRJyTHFIELcMHuNjO3VXyqWljU452yrsT7SKq6qrmd4tZLJFm\nvR0YFY4ClEr1f8M0tbczPXbtrJ4Bc9u1MCQAanRMjW8k9lsI0ZqlivEjWLa1yk7L\nGWlhB5oXXQfZZZH7ipMxDqkYVMwD6DZYj5n3UGoYsQKBgQD3dJu3AiswX+uktrlQ\nx50LDuKVvFm95OtFSRBsEzPq550CJQuPXaEFcZ90JoxvfNbvcutssQhx5m7Thlen\nmztdPxndrohf8SuED/S9rzqSIf1XFI/rDehvK7RO13SGufCm/WZ0d8KJ5JTr1/k2\nsy0E49mljUodRRqg2tNKHXcrowKBgQDeLNZiCJ+FB0a3BfWJHDotn46d32rhBW2N\n/uiTkh8XZY8HSv2wVTD+zhR422QNYfhQX9cjs6KluymApCYslPt4WpJWij2ChrIw\nFyXGF4cxOZuBs1UsgXsSJOV2poT9Motokkc4bIEqOOEp1eJsIHY5MncwLtXGScsW\nc9EkJ/MZFQKBgH4fnfoiDddDHHzAcSWeCAoJ1S0Saf8ifVO8ELW09+JDmL/uF71D\nsH1w0x/FQhDU5Uv4G8wzUyWSmGwRbf3MXe6B6fIWMgYMiuxtoYVImaa/0jsfDNd2\nKED5WpZQtGCyxtimESFNpQbZTZoDY08g9dInO9hoch0HCrJvtf9xkzrXAoGASrNC\npZWGpQCsSw9K3f3KpdpW5kffNKdRjYOeiTeBEqnH7EjPgUEzhwidI4GIY2OETOnc\neRmF3zlNm/4VA7pXzsCNIWG7iq5lLPwrbC4u+2MGIRa91Yf3bENRj5Ivdr5O1ysP\nnS4GQ776HcnXJknH1jVck6u7nr7i9LqeIAz6lH0CgYB1mtyhPas+WmtuarLOizUw\nP4nPgfLCeCrFHKHK7Efxk950yEzRboQKFNSbxLY5IjVvpGqq+epbbRSB/vxJcrI/\ne29Y0Pk8xWstKnlP+3tFsijXRS53U7U22jm7vxaFdTfmx1pAy+L4vco+8HJ4761e\nvYR4FNd9CRY2db06thTP8Q==\n-----END PRIVATE KEY-----\n",
+  "client_email": "wwplawfirm-drive-access@wwplawfirm.iam.gserviceaccount.com",
+  "client_id": "115673796756843363459",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/wwplawfirm-drive-access%40wwplawfirm.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
