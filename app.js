@@ -42,7 +42,7 @@ mongoose.connect(process.env.MONGODB_URI)
   });
   const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-      ? ['https://wwpmanage.vercel.app', 'https://your-production-domain.com']
+      ? ['https://wwpmanage.vercel.app']
       : ['http://localhost:3000', 'http://localhost:5173'], // tambahkan port frontend lokal Anda
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
