@@ -40,8 +40,21 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((e) => {
     console.log('Database not connected due to error, ', e);
   });
+  const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://wwpmanage.vercel.app', 'https://your-production-domain.com']
+      : ['http://localhost:3000', 'http://localhost:5173'], // tambahkan port frontend lokal Anda
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  };
 
-const PORT = process.env.SERVER_PORT || 9000;
+  app.use(cors(corsOptions));
+
+  const PORT = process.env.NODE_ENV === 'production' 
+  ? process.env.PORT || 3000 
+  : process.env.SERVER_PORT || 9000;
+
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
