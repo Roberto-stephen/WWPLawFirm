@@ -1,10 +1,6 @@
 node_modules
 .env
 package-lock.json
-reset-admin-password.js
-resetPasswordAtlas.js
-testConnection.js
-createUser.js
 
 # Ignore sensitive files:
 config/gdrive_api_keys.json
