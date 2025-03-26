@@ -10,14 +10,6 @@
     {
       "src": "/auth/login",
       "dest": "app.js"
-    },
-    {
-      "src": "/auth/(.*)",
-      "dest": "app.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "app.js"
     }
   ],
   "env": {
