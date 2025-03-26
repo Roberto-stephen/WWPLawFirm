@@ -1,6 +1,6 @@
 // Fungsi-fungsi umum untuk UI
 
-function showAlert(message, type) {
+function displayAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
   
   if (!alertContainer) return;

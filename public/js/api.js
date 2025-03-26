@@ -54,7 +54,7 @@ const handleResponse = async (response) => {
 // Authentication API
 const authAPI = {
   login: async (email, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const authAPI = {
   },
   
   register: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const authAPI = {
 // Cases API
 const casesAPI = {
   getCases: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/cases`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases`, {
       headers: getHeaders(),
     });
     
@@ -114,7 +114,7 @@ const casesAPI = {
   },
   
   getCase: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
       headers: getHeaders(),
     });
     
@@ -122,7 +122,7 @@ const casesAPI = {
   },
   
   createCase: async (caseData) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(caseData),
@@ -132,7 +132,7 @@ const casesAPI = {
   },
   
   updateCase: async (caseId, caseData) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(caseData),
@@ -142,7 +142,7 @@ const casesAPI = {
   },
   
   deleteCase: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -151,7 +151,7 @@ const casesAPI = {
   },
   
   getCaseMessages: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}/message`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/cases/${caseId}/message`, {
       headers: getHeaders(),
     });
     
@@ -162,7 +162,7 @@ const casesAPI = {
 // Documents API
 const documentsAPI = {
   getAllDocuments: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/all`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents/all`, {
       headers: getHeaders(),
     });
     
@@ -170,7 +170,7 @@ const documentsAPI = {
   },
   
   getDocumentsByCaseId: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/all/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents/all/${caseId}`, {
       headers: getHeaders(),
     });
     
@@ -178,7 +178,7 @@ const documentsAPI = {
   },
   
   getDocument: async (docId, caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
       headers: getHeaders(),
     });
     
@@ -192,7 +192,7 @@ const documentsAPI = {
       // Content-Type akan otomatis diatur oleh browser karena kita mengirim FormData
     };
     
-    const response = await fetch(`${API_BASE_URL}/api/documents`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents`, {
       method: 'POST',
       headers: headers,
       body: formData, // FormData untuk file upload
@@ -202,7 +202,7 @@ const documentsAPI = {
   },
   
   updateDocument: async (docData) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(docData),
@@ -212,7 +212,7 @@ const documentsAPI = {
   },
   
   deleteDocument: async (docId, caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -224,7 +224,7 @@ const documentsAPI = {
 // Appointments API
 const appointmentsAPI = {
   getAppointments: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments`, {
       headers: getHeaders(),
     });
     
@@ -232,7 +232,7 @@ const appointmentsAPI = {
   },
   
   getAppointment: async (appointmentId) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
       headers: getHeaders(),
     });
     
@@ -240,7 +240,7 @@ const appointmentsAPI = {
   },
   
   createAppointment: async (appointmentData) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(appointmentData),
@@ -250,7 +250,7 @@ const appointmentsAPI = {
   },
   
   updateAppointment: async (appointmentId, appointmentData) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(appointmentData),
@@ -260,7 +260,7 @@ const appointmentsAPI = {
   },
   
   cancelAppointment: async (appointmentId) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -269,7 +269,7 @@ const appointmentsAPI = {
   },
   
   getUserList: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/userlist`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments/userlist`, {
       headers: getHeaders(),
     });
     
@@ -277,7 +277,7 @@ const appointmentsAPI = {
   },
   
   updateUserResponse: async (appointmentId, response) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/response/${appointmentId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/appointments/response/${appointmentId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify({ response }),
@@ -290,7 +290,7 @@ const appointmentsAPI = {
 // Tasks API
 const tasksAPI = {
   getTasks: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks`, {
       headers: getHeaders(),
     });
     
@@ -298,7 +298,7 @@ const tasksAPI = {
   },
   
   getTask: async (taskId) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
       headers: getHeaders(),
     });
     
@@ -306,7 +306,7 @@ const tasksAPI = {
   },
   
   createTask: async (taskData) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(taskData),
@@ -316,7 +316,7 @@ const tasksAPI = {
   },
   
   updateTask: async (taskId, taskData) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(taskData),
@@ -326,7 +326,7 @@ const tasksAPI = {
   },
   
   deleteTask: async (taskId) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -335,7 +335,7 @@ const tasksAPI = {
   },
   
   getTasksForUser: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/user`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/user`, {
       headers: getHeaders(),
     });
     
@@ -343,7 +343,7 @@ const tasksAPI = {
   },
   
   getUserList: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/userlist`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/userlist`, {
       headers: getHeaders(),
     });
     
@@ -351,7 +351,7 @@ const tasksAPI = {
   },
   
   updateStatus: async (taskId, status) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/updateStatus/${status}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/tasks/updateStatus/${status}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify({ _id: taskId }),
@@ -364,7 +364,7 @@ const tasksAPI = {
 // Statistics API
 const statisticsAPI = {
   getDashboardStatistics: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/dashboard`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/statistics/dashboard`, {
       headers: getHeaders(),
     });
     
@@ -372,7 +372,7 @@ const statisticsAPI = {
   },
   
   getNotifications: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/notifications`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/statistics/notifications`, {
       headers: getHeaders(),
     });
     
@@ -383,7 +383,7 @@ const statisticsAPI = {
 // CRM API
 const crmAPI = {
   getUsers: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/crm`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm`, {
       headers: getHeaders(),
     });
     
@@ -391,7 +391,7 @@ const crmAPI = {
   },
   
   getEmployees: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/employee`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm/employee`, {
       headers: getHeaders(),
     });
     
@@ -399,7 +399,7 @@ const crmAPI = {
   },
   
   getUser: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
       headers: getHeaders(),
     });
     
@@ -407,7 +407,7 @@ const crmAPI = {
   },
   
   createUser: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(userData),
@@ -417,7 +417,7 @@ const crmAPI = {
   },
   
   updateUser: async (userId, userData) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(userData),
@@ -427,7 +427,7 @@ const crmAPI = {
   },
   
   updatePassword: async (oldPassword, newPassword) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/p`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm/p`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify({ oldpassword: oldPassword, newpassword: newPassword }),
@@ -437,7 +437,7 @@ const crmAPI = {
   },
   
   deleteUser: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
+    const apiResponse= await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -447,7 +447,7 @@ const crmAPI = {
 };
 
 // Export semua API services
-const API = {
+window.API = {
   auth: authAPI,
   cases: casesAPI,
   documents: documentsAPI,

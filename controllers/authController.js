@@ -58,41 +58,45 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.json({
-                error: 'No user found'
-            })
-        }
-
-        const match = await comparePassword(password, user.password)
-        if (match) {
-            jwt.sign({
-                email: user.email,
-                userId: user._id,
-                name: user.username,
-                type: user.type
-            }, process.env.JWT_SECRET, {}, (err, token) => {
-                if (err) throw err;
-                res.cookie('token', token, {
-                    secure: false,//process.env.NODE_ENV !== "development",
-                    httpOnly: true,
-                    maxAge: 2 * 60 * 60 * 1000,
-                })
-                .json({ token, type: user.type, name: user.username})
-            })
-        }
-        else{
-            throw new UnauthorizedAccessError("Unauthorized Access")
-        }
+      const { email, password } = req.body;
+      console.log('Login attempt:', email);
+      
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(401).json({
+          error: 'User tidak ditemukan'
+        });
+      }
+      
+      const match = await comparePassword(password, user.password);
+      
+      if (match) {
+        // Buat token
+        const token = jwt.sign({
+          email: user.email,
+          userId: user._id,
+          name: user.username,
+          type: user.type
+        }, process.env.JWT_SECRET, { expiresIn: '2h' });
+        
+        // Kirim token dan info user
+        return res.status(200).json({
+          token: token,
+          name: user.username,
+          type: user.type
+        });
+      } else {
+        return res.status(401).json({
+          error: 'Password salah'
+        });
+      }
     } catch (error) {
-        res.status(401).json({
-            error: error.name,
-            message: error.message
-        })
+      console.error('Login error:', error);
+      return res.status(500).json({
+        error: 'Internal server error'
+      });
     }
-}
+  };
 
 const readUser = (req, res) => {
 }

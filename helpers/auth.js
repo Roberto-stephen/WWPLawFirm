@@ -12,8 +12,14 @@ const hashPassword = (password) => {
     })
 }
 
-const comparePassword = (password, hashed) => {
-    return bcrypt.compare(password, hashed)
-}
+const comparePassword = async (password, hashedPassword) => {
+    try {
+        // Menggunakan bcrypt.compare untuk membandingkan password
+        return await bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+        console.error("Error comparing passwords:", error);
+        return false;
+    }
+};
 
 module.exports = { hashPassword, comparePassword }
