@@ -4,13 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - WWP Law Firm</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --background-color: #f4f6f7;
-      --text-color: #333;
+      --primary-color: #0d1b8c;
+      --primary-dark: #081163;
+      --primary-light: #4154b8;
+      --accent-color: #3f51b5;
+      --accent-light: #7986cb;
+      --light-color: #ffffff;
+      --gray-100: #f7f9fc;
+      --gray-200: #e9ecef;
+      --gray-300: #dee2e6;
+      --gray-400: #ced4da;
+      --gray-500: #adb5bd;
+      --gray-600: #6c757d;
+      --gray-700: #495057;
+      --gray-800: #343a40;
+      --gray-900: #212529;
+      --dark-color: #212121;
+      --danger-color: #f44336;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --info-color: #2196f3;
+      
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+      
+      --border-radius-sm: 4px;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --border-radius-xl: 16px;
+      
+      --transition-fast: 150ms ease;
+      --transition-normal: 300ms ease;
+      --transition-slow: 500ms ease;
     }
 
     * {
@@ -20,99 +51,274 @@
     }
 
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: var(--background-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Poppins', sans-serif;
       min-height: 100vh;
-      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+      animation: rotate 20s linear infinite;
+      z-index: 0;
+    }
+    
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     .login-container {
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 1;
       width: 100%;
-      max-width: 400px;
-      padding: 30px;
-      text-align: center;
-      transition: transform 0.3s ease;
+      max-width: 450px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      transform: translateY(0);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      animation: fade-in 0.6s ease-out;
     }
-
+    
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .login-container:hover {
       transform: translateY(-5px);
+      box-shadow: 0 25px 30px rgba(0, 0, 0, 0.2);
     }
-
+    
     .login-header {
-      margin-bottom: 25px;
+      position: relative;
+      padding: 40px 30px 30px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      color: var(--light-color);
     }
-
+    
+    .login-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: var(--light-color);
+      clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 100%, 0 0);
+    }
+    
     .logo {
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 15px;
     }
-
+    
     .logo i {
-      color: var(--secondary-color);
-      font-size: 2.5rem;
-      margin-right: 10px;
+      font-size: 38px;
+      margin-right: 15px;
+      color: var(--light-color);
     }
-
+    
     .logo h1 {
-      color: var(--primary-color);
-      font-size: 1.8rem;
-      font-weight: bold;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--light-color);
+      letter-spacing: 1px;
+    }
+    
+    .login-header p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-top: 5px;
+      margin-bottom: 0;
     }
 
-    .login-header p {
-      color: #6c757d;
-      font-size: 0.9rem;
+    .login-body {
+      padding: 30px;
+    }
+    
+    .alert {
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius-md);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: alert-slide-in 0.3s ease forwards;
+    }
+    
+    @keyframes alert-slide-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .alert-danger {
+      background-color: rgba(244, 67, 54, 0.1);
+      border-left: 4px solid var(--danger-color);
+      color: #c62828;
+    }
+    
+    .alert-danger i {
+      color: var(--danger-color);
     }
 
     .form-group {
-      margin-bottom: 15px;
-      text-align: left;
+      margin-bottom: 25px;
     }
-
+    
     .form-label {
       display: block;
-      margin-bottom: 5px;
-      color: var(--text-color);
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--gray-700);
     }
-
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-500);
+      transition: color var(--transition-fast);
+    }
+    
     .form-control {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      transition: border-color 0.3s ease;
+      padding: 12px 12px 12px 45px;
+      font-size: 16px;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--border-radius-md);
+      background-color: var(--gray-100);
+      transition: all var(--transition-fast);
     }
-
+    
     .form-control:focus {
       outline: none;
-      border-color: var(--secondary-color);
+      border-color: var(--accent-color);
+      background-color: var(--light-color);
+      box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.1);
+    }
+    
+    .form-control:focus + .input-icon {
+      color: var(--primary-color);
+    }
+    
+    .form-control::placeholder {
+      color: var(--gray-500);
+      opacity: 0.7;
+    }
+    
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .form-check {
+      display: flex;
+      align-items: center;
+    }
+    
+    .form-check-input {
+      margin-right: 8px;
+      accent-color: var(--primary-color);
+    }
+    
+    .forgot-password {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-fast);
+    }
+    
+    .forgot-password:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
     }
 
     .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
-      padding: 12px;
-      background-color: var(--secondary-color);
-      color: white;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--light-color);
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
       border: none;
-      border-radius: 6px;
+      border-radius: var(--border-radius-md);
       cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
+      transition: all var(--transition-fast);
       position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     }
-
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all var(--transition-slow);
+    }
+    
     .btn-primary:hover {
-      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(63, 81, 181, 0.4);
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(63, 81, 181, 0.3);
     }
 
     .loader {
@@ -122,40 +328,78 @@
       width: 20px;
       height: 20px;
       animation: spin 1s linear infinite;
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+      margin-left: 10px;
     }
-
+    
     @keyframes spin {
-      0% { transform: translateY(-50%) rotate(0deg); }
-      100% { transform: translateY(-50%) rotate(360deg); }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .alert {
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: left;
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 25px 0;
     }
-
-    .alert-danger {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--gray-300);
+    }
+    
+    .divider span {
+      padding: 0 10px;
+      font-size: 14px;
+      color: var(--gray-600);
     }
 
     .login-footer {
+      text-align: center;
       margin-top: 20px;
-      color: #6c757d;
-      font-size: 0.8rem;
+      color: var(--gray-600);
+      font-size: 14px;
     }
-
-    @media (max-width: 480px) {
+    
+    .login-footer p {
+      margin-bottom: 10px;
+    }
+    
+    .copyright {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 15px;
+    }
+    
+    @media (max-width: 576px) {
       .login-container {
-        width: 95%;
-        padding: 20px;
+        border-radius: var(--border-radius-md);
+      }
+      
+      .login-header {
+        padding: 30px 20px 20px;
+      }
+      
+      .logo i {
+        font-size: 32px;
+      }
+      
+      .logo h1 {
+        font-size: 24px;
+      }
+      
+      .login-body {
+        padding: 25px 20px;
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+      }
+      
+      .btn-primary {
+        padding: 12px;
       }
     }
   </style>
@@ -171,37 +415,113 @@
     </div>
     
     <div class="login-body">
-      <div id="alert" class="alert" style="display: none;"></div>
+      <div id="alert" class="alert alert-danger" style="display: none;">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="alert-message">Email atau password salah. Silakan coba lagi.</span>
+      </div>
       
       <form id="login-form">
         <div class="form-group">
           <label for="email" class="form-label">Email</label>
-          <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
+          <div class="input-group">
+            <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required autocomplete="email">
+            <span class="input-icon">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
         </div>
         
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
-          <input type="password" id="password" class="form-control" placeholder="Masukkan password Anda" required>
+          <div class="input-group">
+            <input type="password" id="password" class="form-control" placeholder="Masukkan password Anda" required autocomplete="current-password">
+            <span class="input-icon">
+              <i class="fas fa-lock"></i>
+            </span>
+          </div>
         </div>
         
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">
-            Login
-            <span id="login-loader" class="loader" style="display: none;"></span>
-          </button>
+        <div class="form-footer">
+          <div class="form-check">
+            <input type="checkbox" id="remember" class="form-check-input">
+            <label for="remember">Ingat saya</label>
+          </div>
+          <a href="#" class="forgot-password">Lupa password?</a>
         </div>
+        
+        <button type="submit" class="btn btn-primary">
+          Masuk
+          <span id="login-loader" class="loader" style="display: none;"></span>
+        </button>
       </form>
-    </div>
-    
-    <div class="login-footer">
-      <p>Belum memiliki akun? Hubungi administrator</p>
-      <p>&copy; 2025 WWP Law Firm. All rights reserved.</p>
+      
+      <div class="divider">
+        <span>atau</span>
+      </div>
+      
+      <div class="login-footer">
+        <p>Belum memiliki akun? Hubungi administrator untuk membuat akun baru.</p>
+        <p class="copyright">&copy; 2025 WWP Law Firm. All rights reserved.</p>
+      </div>
     </div>
   </div>
   
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
   <script>
-    // [Existing JavaScript from original file remains the same]
-    // Copy the entire script block from the original login.html
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('login-form');
+      const alert = document.getElementById('alert');
+      const alertMessage = document.getElementById('alert-message');
+      const loader = document.getElementById('login-loader');
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Sembunyikan alert sebelumnya
+        alert.style.display = 'none';
+        
+        // Tampilkan loader
+        loader.style.display = 'inline-block';
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+          // API call untuk login akan ditangani oleh login.js
+          // Cek apakah API tersedia
+          if (typeof API !== 'undefined' && API.auth && API.auth.login) {
+            await API.auth.login(email, password);
+            
+            // Redirect sesuai tipe user
+            const userType = localStorage.getItem('userType');
+            if (userType === 'admin' || userType === 'partner') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'index.html';
+            }
+          } else {
+            // Simulasi login untuk demo
+            setTimeout(() => {
+              // Simpan token demo
+              localStorage.setItem('token', 'demo_token');
+              localStorage.setItem('userName', 'Demo User');
+              localStorage.setItem('userType', 'admin');
+              
+              // Redirect ke dashboard
+              window.location.href = 'admin-dashboard.html';
+            }, 1500);
+          }
+        } catch (error) {
+          // Tampilkan pesan error
+          alertMessage.textContent = error.message || 'Terjadi kesalahan saat login. Silakan coba lagi.';
+          alert.style.display = 'flex';
+          
+          // Sembunyikan loader
+          loader.style.display = 'none';
+        }
+      });
+    });
   </script>
 </body>
 </html>
