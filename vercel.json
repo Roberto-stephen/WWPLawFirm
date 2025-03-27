@@ -9,7 +9,6 @@
     { "src": "/(.*)", "dest": "app.js" }
   ],
   "env": {
-    "VERCEL": "true",
-    "NODE_ENV": "production"
+    "VERCEL": "true"
   }
 }

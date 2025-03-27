@@ -3,36 +3,62 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
-const path = require('path'); // Pindahkan ke atas
+const path = require('path');
 dotenv.config();
+
+// Import modules
 const getUserInfo = require('./helpers/getUserInfo');
 const jwt = require('jsonwebtoken');
-const { caseMessageHandlers, writeMessageBatchToDB } = require('./socketHandler/caseMessageHandlers')
+const mongoose = require('mongoose');
+
+// Import routes
 const appointment = require('./routes/appointment');
 const cases = require('./routes/case');
 const document = require('./routes/document');
 const auth = require('./routes/auth');
 const taskRoutes = require('./routes/task');
 const statistic = require('./routes/statistic');
-const Notification = require('./models/notification');
-
-const mongoose = require('mongoose');
-const Message = require('./models/message')
-const User = require('./models/user')
 const crmRoute = require('./routes/crm');
-const { requireAuth } = require('./middlewares/authMiddleware');
 
-// PENTING: Inisialisasi app SEBELUM menggunakannya
+// Cek apakah dalam lingkungan Vercel
+const isVercel = process.env.VERCEL === 'true';
+
+// Initialize Express
 const app = express();
 
-// Konfigurasi middleware
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
-app.use(express.static(path.join(__dirname, 'public'))); // Pindahkan ke sini
 
+// CORS Configuration
+const corsOptions = {
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'https://wwpmanage.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:9000'
+    ];
+    
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy violation'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
+  credentials: true
+};
 
+app.use(cors(corsOptions));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Database connected');
@@ -40,27 +66,8 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((e) => {
     console.log('Database not connected due to error, ', e);
   });
-  const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://wwpmanage.vercel.app']
-      : ['http://localhost:3000', 'http://localhost:5173'], // tambahkan port frontend lokal Anda
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-  };
 
-  app.use(cors(corsOptions));
-
-  const PORT = process.env.NODE_ENV === 'production' 
-  ? process.env.PORT || 3000 
-  : process.env.SERVER_PORT || 9000;
-
-
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-// All routes
+// Routes
 app.use('/api/appointments', appointment);
 app.use('/api/documents', document);
 app.use('/api/cases', cases);
@@ -69,8 +76,26 @@ app.use('/auth', auth);
 app.use('/api/crm', crmRoute);
 app.use('/api/tasks', taskRoutes);
 
-// Pilih HANYA SATU dari dua route berikut (hapus yang tidak dibutuhkan)
-// Opsi 1: Jika ingin menyajikan file HTML
+// Endpoint untuk memeriksa status
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    environment: isVercel ? 'vercel' : 'local',
+    dbConnected: mongoose.connection.readyState === 1
+  });
+});
+
+// Socket.io status endpoint
+app.get('/api/socket-status', (req, res) => {
+  res.json({
+    available: !isVercel,
+    message: isVercel 
+      ? "Real-time features are not available in demo mode."
+      : "Socket.io is available"
+  });
+});
+
+// Serve static HTML files
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -79,36 +104,73 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-
-// Opsi 2: Jika ingin mengarahkan ke dokumentasi API
-// app.get('/', (req, res) => {
-//   res.redirect('/api-docs');
-// });
-
-const io = require('socket.io')(server, {
-  cors: {
-    origin: process.env.CLIENT_URL,
-    allowedHeaders: ["my-custom-header"],
-    credentials: true
-  }
+// Fallback route handler untuk SPA
+app.get('*', (req, res) => {
+  // Coba kirim file statis jika ada
+  const filePath = path.join(__dirname, 'public', req.path);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      // Jika file tidak ditemukan, coba cek jika ada .html extension
+      const htmlPath = path.join(__dirname, 'public', `${req.path}.html`);
+      res.sendFile(htmlPath, (err2) => {
+        if (err2) {
+          // Jika masih tidak ditemukan, kirim index.html
+          res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        }
+      });
+    }
+  });
 });
 
-const onConnection = (socket) => {
-  caseMessageHandlers(io, socket);
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.message);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message 
+  });
+});
+
+// Server hanya berjalan di lingkungan lokal
+if (!isVercel) {
+  const PORT = process.env.SERVER_PORT || 9000;
+  const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+
+  // Socket.io
+  const io = require('socket.io')(server, {
+    cors: {
+      origin: corsOptions.origin,
+      methods: corsOptions.methods,
+      allowedHeaders: corsOptions.allowedHeaders,
+      credentials: true
+    }
+  });
+
+  // Socket handlers
+  const { caseMessageHandlers, writeMessageBatchToDB } = require('./socketHandler/caseMessageHandlers');
+
+  const onConnection = (socket) => {
+    caseMessageHandlers(io, socket);
+  }
+
+  io.use(function (socket, next) {
+    if (socket.handshake.query && socket.handshake.query.token) {
+      jwt.verify(socket.handshake.query.token, process.env.JWT_SECRET, function (err, decoded) {
+        if (err) return next(new Error('Authentication error'));
+        socket.decoded = decoded;
+        next();
+      });
+    }
+    else {
+      next(new Error('Authentication error'));
+    }
+  }).on('connection', onConnection);
+
+  // Set up periodic batch write
+  setInterval(writeMessageBatchToDB, 5000);
 }
 
-io.use(function (socket, next) {
-  if (socket.handshake.query && socket.handshake.query.token) {
-    jwt.verify(socket.handshake.query.token, process.env.JWT_SECRET, function (err, decoded) {
-      if (err) return next(new Error('Authentication error'));
-      socket.decoded = decoded;
-      next();
-    });
-  }
-  else {
-    next(new Error('Authentication error'));
-  }
-}).on('connection', onConnection);
-
-// Set up periodic batch write (adjust the interval as needed)
-setInterval(writeMessageBatchToDB, 5000); // 5000 milliseconds (5 seconds) as an example interval
+// Export untuk Vercel
+module.exports = app;
