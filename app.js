@@ -22,6 +22,7 @@ const crmRoute = require('./routes/crm');
 
 // Cek apakah dalam lingkungan Vercel
 const isVercel = process.env.VERCEL === 'true';
+const isDev = process.env.NODE_ENV !== 'production';
 
 // Initialize Express
 const app = express();
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: function(origin, callback) {
     const allowedOrigins = [
+      'https://wwplawfirm.vercel.app', // Tambahkan domain Vercel Anda
       'https://wwpmanage.vercel.app',
       'http://localhost:3000',
       'http://localhost:5173',
