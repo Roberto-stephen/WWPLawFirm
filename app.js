@@ -94,6 +94,47 @@ mongoose.connect(process.env.MONGODB_URI)
     });
   });
 
+  app.get('/api/mongo-debug', async (req, res) => {
+    try {
+      // Test koneksi MongoDB dengan operasi sederhana
+      const dbStatus = {
+        readyState: mongoose.connection.readyState,
+        connected: mongoose.connection.readyState === 1,
+        error: null
+      };
+      
+      // Coba melakukan operasi sederhana untuk memastikan koneksi berfungsi
+      if (dbStatus.connected) {
+        try {
+          // Dapatkan jumlah user (operasi DB ringan)
+          const userCount = await User.countDocuments();
+          dbStatus.userCount = userCount;
+          dbStatus.testOperation = 'success';
+        } catch (dbOpError) {
+          dbStatus.testOperation = 'failed';
+          dbStatus.operationError = dbOpError.message;
+        }
+      }
+      
+      res.json({
+        status: 'ok',
+        database: dbStatus,
+        env: {
+          nodeEnv: process.env.NODE_ENV,
+          hasJwtSecret: !!process.env.JWT_SECRET,
+          isVercel: process.env.VERCEL === 'true',
+          mongoUriConfigured: !!process.env.MONGODB_URI
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+        stack: isDev ? error.stack : undefined
+      });
+    }
+  });
+
 // Routes
 app.use('/api/appointments', appointment);
 app.use('/api/documents', document);

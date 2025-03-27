@@ -1,25 +1,27 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs');
 
-const hashPassword = (password) => {
-    return new Promise((resolve, reject) => {
-        bcrypt.genSalt(12, (e, salt) => {
-            if (e) reject(e)
-            bcrypt.hash(password, salt, (e, hash) => {
-                if (e) reject(e)
-                resolve(hash)
-            })
-        })
-    })
-}
-
-const comparePassword = async (password, hashedPassword) => {
+// Fungsi untuk hash password
+const hashPassword = async (password) => {
     try {
-        // Menggunakan bcrypt.compare untuk membandingkan password
-        return await bcrypt.compare(password, hashedPassword);
+        const salt = await bcrypt.genSalt(10);
+        return await bcrypt.hash(password, salt);
     } catch (error) {
-        console.error("Error comparing passwords:", error);
-        return false;
+        console.error('Error hashing password:', error);
+        throw new Error('Error hashing password');
     }
 };
 
-module.exports = { hashPassword, comparePassword }
+// Fungsi untuk compare password
+const comparePassword = async (password, hashed) => {
+    try {
+        return await bcrypt.compare(password, hashed);
+    } catch (error) {
+        console.error('Error comparing password:', error);
+        throw new Error('Error comparing password');
+    }
+};
+
+module.exports = {
+    hashPassword,
+    comparePassword
+};

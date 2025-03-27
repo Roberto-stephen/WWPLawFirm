@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/api/debug",
+      "dest": "app.js"
+    },
+    {
       "src": "/auth/(.*)",
       "dest": "app.js"
     },
@@ -20,20 +24,20 @@
       "dest": "app.js"
     },
     {
-      "src": "/css/(.*)",
-      "dest": "/public/css/$1"
+      "src": "/(css|js)/(.*)",
+      "dest": "/public/$1/$2"
     },
     {
-      "src": "/js/(.*)",
-      "dest": "/public/js/$1"
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
     },
     {
       "src": "/(.*\\.html)",
       "dest": "/public/$1"
-    },
-    {
-      "src": "/$",
-      "dest": "/public/index.html"
     },
     {
       "src": "/(.*)",

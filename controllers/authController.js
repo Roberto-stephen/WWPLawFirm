@@ -2,6 +2,7 @@ const User = require('../models/user');
 const { UnauthorizedAccessError } = require('../helpers/exceptions');
 const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
+// Hapus duplikasi import User
 
 const test = (req, res) => {
     res.json('tests is working');
