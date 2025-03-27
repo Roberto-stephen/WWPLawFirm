@@ -4,6 +4,12 @@
     { "src": "app.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "app.js" },
+    { "src": "/auth/(.*)", "dest": "app.js" },
     { "src": "/(.*)", "dest": "app.js" }
-  ]
+  ],
+  "env": {
+    "VERCEL": "true",
+    "NODE_ENV": "production"
+  }
 }
