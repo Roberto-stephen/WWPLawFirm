@@ -1,4 +1,7 @@
 // app.js
+process.on('uncaughtException', (error) => {
+  console.error('FATAL ERROR:', error.message, error.stack);
+});
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -66,7 +69,29 @@ mongoose.connect(process.env.MONGODB_URI)
     console.log('Database connected');
   })
   .catch((e) => {
-    console.log('Database not connected due to error, ', e);
+    console.error('DATABASE CONNECTION ERROR:', e.message, e.stack);
+    // Jangan crash aplikasi di Vercel
+    if (!isVercel) {
+      process.exit(1);
+    }
+  });
+
+  app.get('/api/debug', (req, res) => {
+    res.json({
+      environment: {
+        isVercel: process.env.VERCEL === 'true',
+        nodeEnv: process.env.NODE_ENV,
+        mongoDbUriExists: !!process.env.MONGODB_URI,
+        jwtSecretExists: !!process.env.JWT_SECRET
+      },
+      versions: {
+        node: process.version,
+        express: require('express/package.json').version,
+        mongoose: require('mongoose/package.json').version
+      },
+      memoryUsage: process.memoryUsage(),
+      uptime: process.uptime()
+    });
   });
 
 // Routes

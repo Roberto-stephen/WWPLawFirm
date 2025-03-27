@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "npm run vercel-build",
   "builds": [
     {
       "src": "app.js",
@@ -7,6 +8,10 @@
     }
   ],
   "routes": [
+    {
+      "src": "/api/debug",
+      "dest": "/app.js"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/app.js"
@@ -16,7 +21,8 @@
       "dest": "/app.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/(.*\\.(js|css|html|png|jpg|svg|json))",
+      "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
