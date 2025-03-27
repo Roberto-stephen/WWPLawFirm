@@ -12,12 +12,12 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/app.js"
+      "src": "/auth/(.*)",
+      "dest": "app.js"
     },
     {
-      "src": "/auth/(.*)",
-      "dest": "/app.js"
+      "src": "/api/(.*)",
+      "dest": "app.js"
     },
     {
       "src": "/css/(.*)",
@@ -28,12 +28,16 @@
       "dest": "/public/js/$1"
     },
     {
-      "src": "^/((?!.*\\.).*)$",
-      "dest": "/app.js"
+      "src": "/(.*\\.html)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/$",
+      "dest": "/public/index.html"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "app.js"
     }
   ],
   "env": {

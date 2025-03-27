@@ -1,4 +1,4 @@
-// login.js - Versi sederhana yang fokus hanya pada login
+// login.js - Dengan handling error yang lebih baik
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Login script loaded');
   
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Mencoba login dengan:', email);
     
     try {
-      // Request login sederhana
+      // Request login
       const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
@@ -39,6 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       console.log('Status respons:', response.status);
+      
+      // Handle non-JSON response error
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server error. Mohon coba lagi nanti.');
+      }
       
       const data = await response.json();
       console.log('Data respons:', data);
