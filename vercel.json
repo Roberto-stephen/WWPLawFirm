@@ -1,17 +1,16 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
   "builds": [
     {
       "src": "app.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/api/debug",
-      "dest": "/app.js"
-    },
     {
       "src": "/api/(.*)",
       "dest": "/app.js"
@@ -21,12 +20,20 @@
       "dest": "/app.js"
     },
     {
-      "src": "/(.*\\.(js|css|html|png|jpg|svg|json))",
-      "dest": "/public/$1"
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
+    },
+    {
+      "src": "^/((?!.*\\.).*)$",
+      "dest": "/app.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/app.js"
+      "dest": "/public/$1"
     }
   ],
   "env": {

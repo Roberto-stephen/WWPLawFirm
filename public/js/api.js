@@ -70,6 +70,18 @@ const authAPI = {
   },
   
   register: async (userData) => {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    
+    return handleResponse(response);
+  },
+  
+  register: async (userData) => {
     const apiResponse= await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
