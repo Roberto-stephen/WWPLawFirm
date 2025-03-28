@@ -4,10 +4,6 @@
     {
       "src": "app.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -20,7 +16,7 @@
       "dest": "/public/css/$1"
     },
     {
-      "src": "/(.*\\.(png|jpg|ico|svg))",
+      "src": "/(.*\\.(png|jpg|ico|svg|gif))",
       "dest": "/public/$1"
     },
     {
@@ -33,11 +29,11 @@
     },
     {
       "src": "/login",
-      "dest": "/public/login.html"
+      "dest": "/app.js"
     },
     {
       "src": "/(.*\\.html)",
-      "dest": "/public/$1"
+      "dest": "/public/$1.html"
     },
     {
       "src": "/(.*)",

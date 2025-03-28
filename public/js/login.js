@@ -1,6 +1,6 @@
-// login.js sederhana dengan URL absolut
+// login.js - Optimized untuk Vercel
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Simplified login script loaded');
+  console.log('Login script loaded - Vercel optimized version');
   
   // Hapus token lama
   localStorage.removeItem('token');
@@ -25,15 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
-    // Dapatkan URL absolut
-    const baseUrl = window.location.origin; // https://yoursite.vercel.app
-    const loginUrl = `${baseUrl}/auth/login`;
+    // Gunakan URL relatif, bukan absolut
+    const loginUrl = '/auth/login';
     
     console.log('Mencoba login dengan:', email);
     console.log('URL login:', loginUrl);
     
     try {
-      // Gunakan URL absolut
       const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
@@ -45,7 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Status respons:', response.status);
       
       if (!response.ok) {
-        throw new Error(`Login failed with status ${response.status}`);
+        // Coba ambil detil error jika ada
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Login failed with status ${response.status}`);
+        } catch (jsonError) {
+          throw new Error(`Login failed with status ${response.status}`);
+        }
       }
       
       const data = await response.json();
