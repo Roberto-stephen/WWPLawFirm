@@ -1,8 +1,8 @@
 const User = require('../models/user');
 const { UnauthorizedAccessError } = require('../helpers/exceptions');
-const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
-// Hapus duplikasi import User
+
+// Hapus import helper auth.js karena kita akan menggunakan metode dari model User
 
 const test = (req, res) => {
     res.json('tests is working');
@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
     try {
         const { email, password, username, number, address } = req.body;
         
-        // check empty value
+        // Check empty values
         if (!email) {
             return res.status(400).json({
                 error: 'Email is required!'
@@ -25,19 +25,9 @@ const registerUser = async (req, res) => {
             });
         }
 
-        if (!username) {
+        if (!username || !number || !address) {
             return res.status(400).json({
-                error: 'Username is required!'
-            });
-        } 
-        if (!number) {
-            return res.status(400).json({
-                error: 'Number is required!'
-            });
-        }
-        if (!address) {
-            return res.status(400).json({
-                error: 'Address is required!'
+                error: 'Username, number, and address are required!'
             });
         }
 
@@ -48,17 +38,15 @@ const registerUser = async (req, res) => {
                 error: 'Email already in use'
             });
         }
-
-        const hashedPassword = await hashPassword(password);
         
-        // Create user record in db
+        // Buat user baru - password akan otomatis di-hash oleh middleware pre-save
         const newUser = new User({
-            username, 
-            email, 
-            number, 
-            address, 
-            password: hashedPassword, 
-            avatar_url: "", 
+            username,
+            email,
+            number,
+            address,
+            password, // Pre-save middleware akan hash password
+            avatar_url: "",
             type: "client",
         });
         
@@ -67,7 +55,7 @@ const registerUser = async (req, res) => {
         
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ error: 'User registration failed' });
+        res.status(500).json({ error: 'User registration failed', details: error.message });
     }
 };
 
@@ -90,7 +78,8 @@ const loginUser = async (req, res) => {
             });
         }
         
-        const match = await comparePassword(password, user.password);
+        // Gunakan metode validatePassword dari model User
+        const match = await user.validatePassword(password);
         
         if (match) {
             // Buat token
@@ -115,13 +104,14 @@ const loginUser = async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
         return res.status(500).json({
-            error: 'Internal server error'
+            error: 'Internal server error',
+            details: error.message
         });
     }
 };
 
 const readUser = (req, res) => {
-    // Implementasi ini bisa ditambahkan sesuai kebutuhan
+    // Implementasi dapat ditambahkan sesuai kebutuhan
 };
 
 module.exports = { test, registerUser, loginUser, readUser };

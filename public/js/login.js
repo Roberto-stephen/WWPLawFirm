@@ -1,4 +1,4 @@
-// login.js - Dengan handling error yang lebih baik
+// login.js - Dengan handling error yang lebih baik dan opsi login guest
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Login script loaded');
   
@@ -12,8 +12,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const alert = document.getElementById('alert');
   const alertMessage = document.getElementById('alert-message');
   const loader = document.getElementById('login-loader');
+  const guestClientBtn = document.getElementById('guest-client-btn');
+  const guestAdminBtn = document.getElementById('guest-admin-btn');
   
-  // Handler untuk form submit
+  // Login sebagai Guest Client
+  guestClientBtn.addEventListener('click', () => {
+    loginAsGuest('client');
+  });
+  
+  // Login sebagai Guest Admin
+  guestAdminBtn.addEventListener('click', () => {
+    loginAsGuest('admin');
+  });
+  
+  // Fungsi login sebagai guest
+  function loginAsGuest(type) {
+    // Set data guest di localStorage
+    const guestToken = `guest-token-${Date.now()}`;
+    const guestName = type === 'admin' ? 'Guest Admin' : 'Guest Client';
+    
+    localStorage.setItem('token', guestToken);
+    localStorage.setItem('userName', guestName);
+    localStorage.setItem('userType', type);
+    localStorage.setItem('isGuest', 'true');
+    
+    // Redirect ke halaman yang sesuai
+    if (type === 'admin' || type === 'partner') {
+      window.location.href = 'admin-dashboard.html';
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+  
+  // Handler untuk form submit (login normal)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -53,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userName', data.name || 'User');
         localStorage.setItem('userType', data.type || 'client');
+        localStorage.setItem('isGuest', 'false');
         
         // Redirect berdasarkan tipe user
         if (data.type === 'admin' || data.type === 'partner') {

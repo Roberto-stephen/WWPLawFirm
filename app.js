@@ -14,15 +14,6 @@ const getUserInfo = require('./helpers/getUserInfo');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-// Import routes
-const appointment = require('./routes/appointment');
-const cases = require('./routes/case');
-const document = require('./routes/document');
-const auth = require('./routes/auth');
-const taskRoutes = require('./routes/task');
-const statistic = require('./routes/statistic');
-const crmRoute = require('./routes/crm');
-
 // Cek apakah dalam lingkungan Vercel
 const isVercel = process.env.VERCEL === 'true';
 const isDev = process.env.NODE_ENV !== 'production';
@@ -39,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: function(origin, callback) {
     const allowedOrigins = [
-      'https://wwplawfirm.vercel.app', // Tambahkan domain Vercel Anda
+      'https://wwplawfirm.vercel.app',
       'https://wwpmanage.vercel.app',
       'http://localhost:3000',
       'http://localhost:5173',
@@ -53,6 +44,7 @@ const corsOptions = {
       callback(new Error('CORS policy violation'));
     }
   },
+  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
   credentials: true
@@ -76,73 +68,97 @@ mongoose.connect(process.env.MONGODB_URI)
     }
   });
 
-  app.get('/api/debug', (req, res) => {
-    res.json({
-      environment: {
-        isVercel: process.env.VERCEL === 'true',
-        nodeEnv: process.env.NODE_ENV,
-        mongoDbUriExists: !!process.env.MONGODB_URI,
-        jwtSecretExists: !!process.env.JWT_SECRET
-      },
-      versions: {
-        node: process.version,
-        express: require('express/package.json').version,
-        mongoose: require('mongoose/package.json').version
-      },
-      memoryUsage: process.memoryUsage(),
-      uptime: process.uptime()
-    });
-  });
-
-  app.get('/api/mongo-debug', async (req, res) => {
-    try {
-      // Test koneksi MongoDB dengan operasi sederhana
-      const dbStatus = {
-        readyState: mongoose.connection.readyState,
-        connected: mongoose.connection.readyState === 1,
-        error: null
-      };
-      
-      // Coba melakukan operasi sederhana untuk memastikan koneksi berfungsi
-      if (dbStatus.connected) {
-        try {
-          // Dapatkan jumlah user (operasi DB ringan)
-          const userCount = await User.countDocuments();
-          dbStatus.userCount = userCount;
-          dbStatus.testOperation = 'success';
-        } catch (dbOpError) {
-          dbStatus.testOperation = 'failed';
-          dbStatus.operationError = dbOpError.message;
-        }
-      }
-      
-      res.json({
-        status: 'ok',
-        database: dbStatus,
-        env: {
-          nodeEnv: process.env.NODE_ENV,
-          hasJwtSecret: !!process.env.JWT_SECRET,
-          isVercel: process.env.VERCEL === 'true',
-          mongoUriConfigured: !!process.env.MONGODB_URI
-        }
+// Debugging route untuk memeriksa semua rute terdaftar
+app.get('/debug-routes', (req, res) => {
+  // Kumpulkan semua rute yang terdaftar
+  const routes = [];
+  
+  // Middleware and route handlers from app._router.stack
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // Routes registered directly on the app
+      routes.push({
+        path: middleware.route.path,
+        methods: Object.keys(middleware.route.methods),
       });
-    } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message,
-        stack: isDev ? error.stack : undefined
+    } else if (middleware.name === 'router') {
+      // Routes added via app.use(path, router)
+      const path = middleware.regexp.toString().replace('\\/?(?=\\/|$)/i', '');
+      routes.push({
+        path: path,
+        type: 'router'
       });
     }
   });
+  
+  res.json({
+    routes,
+    authRouteInfo: {
+      registered: app._router.stack.some(layer => 
+        layer.name === 'router' && 
+        layer.regexp.toString().includes('auth')
+      )
+    },
+    environment: {
+      isVercel: process.env.VERCEL === 'true',
+      nodeEnv: process.env.NODE_ENV
+    }
+  });
+});
 
-// Routes
+// Test endpoint untuk auth/login
+app.post('/test-auth-login', (req, res) => {
+  const { email, password } = req.body;
+  
+  res.json({
+    status: 'success',
+    message: 'Auth login test endpoint working',
+    received: {
+      email,
+      passwordProvided: !!password
+    }
+  });
+});
+
+app.get('/api/debug', (req, res) => {
+  res.json({
+    environment: {
+      isVercel: process.env.VERCEL === 'true',
+      nodeEnv: process.env.NODE_ENV,
+      mongoDbUriExists: !!process.env.MONGODB_URI,
+      jwtSecretExists: !!process.env.JWT_SECRET
+    },
+    versions: {
+      node: process.version,
+      express: require('express/package.json').version,
+      mongoose: require('mongoose/package.json').version
+    },
+    memoryUsage: process.memoryUsage(),
+    uptime: process.uptime()
+  });
+});
+
+// Import routes SETELAH middleware dan SEBELUM fallback route
+console.log('Importing routes...');
+const appointment = require('./routes/appointment');
+const cases = require('./routes/case');
+const document = require('./routes/document');
+const auth = require('./routes/auth');
+const taskRoutes = require('./routes/task');
+const statistic = require('./routes/statistic');
+const crmRoute = require('./routes/crm');
+console.log('Routes imported successfully');
+
+// Register routes
+console.log('Registering routes...');
 app.use('/api/appointments', appointment);
 app.use('/api/documents', document);
 app.use('/api/cases', cases);
 app.use('/api/statistics', statistic);
-app.use('/auth', auth);
+app.use('/auth', auth); // Auth route registered at /auth
 app.use('/api/crm', crmRoute);
 app.use('/api/tasks', taskRoutes);
+console.log('Routes registered successfully');
 
 // Endpoint untuk memeriksa status
 app.get('/api/status', (req, res) => {
@@ -150,16 +166,6 @@ app.get('/api/status', (req, res) => {
     status: 'ok',
     environment: isVercel ? 'vercel' : 'local',
     dbConnected: mongoose.connection.readyState === 1
-  });
-});
-
-// Socket.io status endpoint
-app.get('/api/socket-status', (req, res) => {
-  res.json({
-    available: !isVercel,
-    message: isVercel 
-      ? "Real-time features are not available in demo mode."
-      : "Socket.io is available"
   });
 });
 
@@ -172,7 +178,27 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Fallback route handler untuk SPA
+// Explicit auth route handler in case the router isn't working
+app.post('/direct-auth-login', (req, res) => {
+  try {
+    console.log('Direct auth login hit');
+    require('./controllers/authController').loginUser(req, res);
+  } catch (err) {
+    console.error('Direct auth login error:', err);
+    res.status(500).json({ error: 'Server error', message: err.message });
+  }
+});
+
+// Error handler - MUST BE BEFORE FALLBACK ROUTE
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.message);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message 
+  });
+});
+
+// Fallback route handler untuk SPA - HARUS BERADA DI AKHIR
 app.get('*', (req, res) => {
   // Coba kirim file statis jika ada
   const filePath = path.join(__dirname, 'public', req.path);
@@ -190,15 +216,6 @@ app.get('*', (req, res) => {
   });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Server error:', err.message);
-  res.status(500).json({ 
-    error: 'Internal Server Error', 
-    message: err.message 
-  });
-});
-
 // Server hanya berjalan di lingkungan lokal
 if (!isVercel) {
   const PORT = process.env.SERVER_PORT || 9000;
@@ -206,7 +223,7 @@ if (!isVercel) {
     console.log(`Server is running on port ${PORT}`);
   });
 
-  // Socket.io
+  // Socket.io setup (code unchanged)
   const io = require('socket.io')(server, {
     cors: {
       origin: corsOptions.origin,
