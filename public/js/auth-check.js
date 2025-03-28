@@ -10,7 +10,6 @@
 async function checkAuthentication() {
   // Periksa token di localStorage
   const token = localStorage.getItem('token');
-  const isGuest = localStorage.getItem('isGuest') === 'true';
   
   if (!token) {
     // Redirect ke halaman login jika tidak ada token
@@ -19,14 +18,7 @@ async function checkAuthentication() {
   }
   
   try {
-    // Jika ini adalah guest user, kita tidak perlu validasi token ke server
-    if (isGuest) {
-      // Update user info di header
-      updateUserInfo();
-      return true;
-    }
-    
-    // Untuk user biasa, tambahkan validasi token ke server jika diperlukan
+    // Untuk implementasi lebih lanjut, bisa ditambahkan validasi token ke server
     // const response = await fetch('/auth/validate-token', {
     //   headers: { 'Authorization': `Bearer ${token}` }
     // });
@@ -103,17 +95,11 @@ function checkUserAccess() {
 function updateUserInfo() {
   const userName = localStorage.getItem('userName');
   const userType = localStorage.getItem('userType');
-  const isGuest = localStorage.getItem('isGuest') === 'true';
   
   // Update nama pengguna di header
   const userNameElement = document.getElementById('user-name');
   if (userName && userNameElement) {
     userNameElement.textContent = userName;
-    
-    // Tambahkan indikator Guest jika perlu
-    if (isGuest) {
-      userNameElement.innerHTML = userName + ' <span style="font-size: 10px; background: #ff9800; color: white; padding: 2px 5px; border-radius: 10px; margin-left: 5px;">Guest</span>';
-    }
   }
   
   // Dapat ditambahkan: Update avatar pengguna jika tersedia
@@ -137,7 +123,6 @@ function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('userName');
   localStorage.removeItem('userType');
-  localStorage.removeItem('isGuest');
   
   // Hapus cookie token (jika ada)
   document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -178,18 +163,10 @@ document.addEventListener('DOMContentLoaded', async function() {
  */
 async function checkNotifications() {
   const notificationBadge = document.getElementById('notification-badge');
-  const isGuest = localStorage.getItem('isGuest') === 'true';
   
   if (!notificationBadge) return;
   
   try {
-    // Jika guest user, tidak perlu fetch notifikasi dari server
-    if (isGuest) {
-      notificationBadge.textContent = "0";
-      notificationBadge.style.display = 'none';
-      return;
-    }
-    
     const response = await fetch('/api/notifications', {
       headers: {
         'Content-Type': 'application/json'
