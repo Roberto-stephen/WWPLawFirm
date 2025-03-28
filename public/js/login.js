@@ -1,6 +1,6 @@
-// login.js - Dengan handling error yang lebih baik dan opsi login guest
+// login.js sederhana dengan URL absolut
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Login script loaded');
+  console.log('Simplified login script loaded');
   
   // Hapus token lama
   localStorage.removeItem('token');
@@ -12,39 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const alert = document.getElementById('alert');
   const alertMessage = document.getElementById('alert-message');
   const loader = document.getElementById('login-loader');
-  const guestClientBtn = document.getElementById('guest-client-btn');
-  const guestAdminBtn = document.getElementById('guest-admin-btn');
   
-  // Login sebagai Guest Client
-  guestClientBtn.addEventListener('click', () => {
-    loginAsGuest('client');
-  });
-  
-  // Login sebagai Guest Admin
-  guestAdminBtn.addEventListener('click', () => {
-    loginAsGuest('admin');
-  });
-  
-  // Fungsi login sebagai guest
-  function loginAsGuest(type) {
-    // Set data guest di localStorage
-    const guestToken = `guest-token-${Date.now()}`;
-    const guestName = type === 'admin' ? 'Guest Admin' : 'Guest Client';
-    
-    localStorage.setItem('token', guestToken);
-    localStorage.setItem('userName', guestName);
-    localStorage.setItem('userType', type);
-    localStorage.setItem('isGuest', 'true');
-    
-    // Redirect ke halaman yang sesuai
-    if (type === 'admin' || type === 'partner') {
-      window.location.href = 'admin-dashboard.html';
-    } else {
-      window.location.href = 'index.html';
-    }
-  }
-  
-  // Handler untuk form submit (login normal)
+  // Handler untuk form submit
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -56,35 +25,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
+    // Dapatkan URL absolut
+    const baseUrl = window.location.origin; // https://yoursite.vercel.app
+    const loginUrl = `${baseUrl}/auth/login`;
+    
     console.log('Mencoba login dengan:', email);
+    console.log('URL login:', loginUrl);
     
     try {
-      // Request login
-      const response = await fetch('/auth/login', {
+      // Gunakan URL absolut
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
+        body: JSON.stringify({ email, password })
       });
       
       console.log('Status respons:', response.status);
       
-      // Handle non-JSON response error
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server error. Mohon coba lagi nanti.');
+      if (!response.ok) {
+        throw new Error(`Login failed with status ${response.status}`);
       }
       
       const data = await response.json();
       console.log('Data respons:', data);
       
-      if (response.ok && data.token) {
+      if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userName', data.name || 'User');
         localStorage.setItem('userType', data.type || 'client');
-        localStorage.setItem('isGuest', 'false');
         
         // Redirect berdasarkan tipe user
         if (data.type === 'admin' || data.type === 'partner') {
@@ -93,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'index.html';
         }
       } else {
-        // Tampilkan pesan error dari server jika ada
         throw new Error(data.error || 'Login gagal. Silakan coba lagi.');
       }
     } catch (error) {
