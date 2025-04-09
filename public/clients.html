@@ -6,6 +6,180 @@
   <title>Manajemen Klien - WWP Law Firm</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
+  <style>
+    /* Tambahan CSS untuk show/hide password */
+    .password-container {
+      position: relative;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #fff; /* Ubah ke putih */
+    }
+    
+    /* Perbaikan tampilan modal - sesuaikan dengan tema */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1050;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal {
+      position: relative;
+      background-color: #1a3a68; /* Warna biru gelap sesuai sidebar */
+      border-radius: 5px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      margin: auto;
+      transform: none;
+      left: auto;
+      top: auto;
+      color: #ffffff; /* Text putih */
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #2c4975; /* Border biru lebih terang */
+      background-color: #1a3a68; /* Warna biru gelap */
+    }
+    
+    .modal-body {
+      padding: 20px;
+      max-height: 70vh;
+      overflow-y: auto;
+      background-color: #1a3a68; /* Warna biru gelap */
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 15px 20px;
+      border-top: 1px solid #2c4975; /* Border biru lebih terang */
+      background-color: #1a3a68; /* Warna biru gelap */
+    }
+    
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff; /* Text putih */
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #ffffff; /* Warna putih */
+    }
+    
+    .modal-close:hover {
+      color: #f0f0f0; /* Putih sedikit gelap saat hover */
+    }
+    
+    /* Form styling dalam modal */
+    .form-label {
+      color: #ffffff; /* Text putih */
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+    }
+    
+    .form-control {
+      background-color: #2c4975; /* Input field biru lebih terang */
+      border: 1px solid #3a5a8c;
+      color: #ffffff; /* Text putih */
+      padding: 8px 12px;
+      border-radius: 4px;
+      width: 100%;
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+      border-color: #4a6a9c;
+    }
+    
+    .form-control::placeholder {
+      color: #a0b0c8; /* Placeholder warna biru pucat */
+    }
+    
+    textarea.form-control {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* Style untuk tombol */
+    .btn-primary {
+      background-color: #3498db; /* Biru lebih cerah */
+      border-color: #3498db;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #2980b9; /* Sedikit lebih gelap saat hover */
+      border-color: #2980b9;
+    }
+    
+    .btn-danger {
+      background-color: #e74c3c; /* Merah */
+      border-color: #e74c3c;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b; /* Merah lebih gelap saat hover */
+      border-color: #c0392b;
+    }
+    
+    /* Alert styling */
+    #alert-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+    
+    .alert {
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      animation: fadeIn 0.3s;
+    }
+    
+    .alert-success {
+      background-color: #2ecc71; /* Hijau */
+      color: #fff;
+      border: 1px solid #27ae60;
+    }
+    
+    .alert-danger {
+      background-color: #e74c3c; /* Merah */
+      color: #fff;
+      border: 1px solid #c0392b;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body class="client-page">
   <!-- Sidebar -->
@@ -96,7 +270,7 @@
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Daftar Klien</div>
-          <button class="btn btn-primary" onclick="openModal('add-client-modal')">
+          <button class="btn btn-primary" id="tambah-klien-btn">
             <i class="fas fa-plus"></i> Tambah Klien
           </button>
         </div>
@@ -128,7 +302,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 class="modal-title">Tambah Klien Baru</h3>
-        <button class="modal-close">&times;</button>
+        <button type="button" class="modal-close" id="close-modal">&times;</button>
       </div>
       <div class="modal-body">
         <form id="add-client-form">
@@ -154,32 +328,56 @@
           
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+            <div class="password-container">
+              <input type="password" id="password" name="password" class="form-control" required>
+              <span class="password-toggle" id="password-toggle">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-danger modal-close">Batal</button>
-        <button class="btn btn-primary" id="save-client-btn">Simpan</button>
+        <button type="button" class="btn btn-danger" id="cancel-button">Batal</button>
+        <button type="button" class="btn btn-primary" id="save-client-btn">Simpan</button>
       </div>
     </div>
   </div>
   
-  
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Load all clients
+    // Setup debug logging
+    function logDebug(message, data) {
+      console.log(`[DEBUG] ${message}`, data || '');
+    }
+    
+    // Load semua klien dari API
     async function loadClients() {
       try {
+        logDebug("Loading clients...");
         showLoading('clients-table');
         
-        const clients = await API.crm.getUsers();
+        // Gunakan endpoint yang diperbaiki
+        const response = await fetch('/api/crm/clients', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        const clients = await response.json();
+        logDebug("Clients data received:", clients);
         
         const tableBody = document.querySelector('#clients-table tbody');
         tableBody.innerHTML = '';
         
-        if (clients.length === 0) {
+        if (!clients || clients.length === 0) {
           tableBody.innerHTML = `
             <tr>
               <td colspan="6" class="text-center">Tidak ada klien ditemukan</td>
@@ -189,12 +387,19 @@
           clients.forEach(client => {
             const row = document.createElement('tr');
             
+            // Pastikan data ada dan gunakan nilai default jika tidak ada
+            const username = client.username || 'Tidak ada nama';
+            const email = client.email || 'Tidak ada email';
+            const phone = client.number || '-';
+            const address = client.address || '-';
+            const activeCases = client.activeCases || '-';
+            
             row.innerHTML = `
-              <td>${client.username}</td>
-              <td>${client.email}</td>
-              <td>${client.number}</td>
-              <td>${client.address}</td>
-              <td>-</td>
+              <td>${username}</td>
+              <td>${email}</td>
+              <td>${phone}</td>
+              <td>${address}</td>
+              <td>${activeCases}</td>
               <td>
                 <a href="client-detail.html?id=${client._id}" class="btn btn-primary btn-sm">
                   <i class="fas fa-eye"></i>
@@ -211,81 +416,283 @@
             tableBody.appendChild(row);
           });
           
-          // Add event listeners to edit and delete buttons
-          document.querySelectorAll('.edit-client-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const clientId = btn.getAttribute('data-id');
-              window.location.href = `client-edit.html?id=${clientId}`;
-            });
-          });
-          
-          document.querySelectorAll('.delete-client-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              if (confirm('Apakah Anda yakin ingin menghapus klien ini?')) {
-                const clientId = btn.getAttribute('data-id');
-                
-                try {
-                  await API.crm.deleteUser(clientId);
-                  showAlert('Klien berhasil dihapus', 'success');
-                  loadClients(); // Reload the clients
-                } catch (error) {
-                  showAlert(`Gagal menghapus klien: ${error.message}`, 'danger');
-                }
-              }
-            });
-          });
+          // Setup event handler untuk tombol
+          setupClientActionButtons();
         }
         
         hideLoading('clients-table');
       } catch (error) {
         console.error('Error loading clients:', error);
-        showAlert('Gagal memuat data klien', 'danger');
+        showAlert(`Gagal memuat data klien: ${error.message}`, 'danger');
         hideLoading('clients-table');
+        
+        // Tampilkan error di tabel
+        const tableBody = document.querySelector('#clients-table tbody');
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center">
+              <i class="fas fa-exclamation-triangle text-danger"></i> 
+              Error: ${error.message}
+            </td>
+          </tr>
+        `;
       }
     }
     
-    // Save client
-    document.getElementById('save-client-btn').addEventListener('click', async () => {
-      const form = document.getElementById('add-client-form');
+    // Setup action buttons
+    function setupClientActionButtons() {
+      // Edit client buttons
+      document.querySelectorAll('.edit-client-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const clientId = this.getAttribute('data-id');
+          window.location.href = `client-edit.html?id=${clientId}`;
+        });
+      });
       
-      // Check if form is valid
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-      
-      // Get client data
-      const clientData = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        number: document.getElementById('number').value,
-        address: document.getElementById('address').value,
-        password: document.getElementById('password').value,
-        type: 'client',
-        avatar_url: ''
-      };
-      
-      try {
-        await API.crm.createUser(clientData);
-        showAlert('Klien berhasil ditambahkan', 'success');
-        closeModal('add-client-modal');
-        loadClients(); // Reload the clients
-        
-        // Reset form
-        form.reset();
-      } catch (error) {
-        showAlert(`Gagal menambahkan klien: ${error.message}`, 'danger');
-      }
+      // Delete client buttons
+      document.querySelectorAll('.delete-client-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const clientId = this.getAttribute('data-id');
+          
+          if (confirm(`Apakah Anda yakin ingin menghapus klien ini?`)) {
+            try {
+              const response = await fetch(`/api/crm/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+              
+              if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+              }
+              
+              showAlert('Klien berhasil dihapus', 'success');
+              loadClients(); // Reload data
+            } catch (error) {
+              console.error('Error deleting client:', error);
+              showAlert(`Gagal menghapus klien: ${error.message}`, 'danger');
+            }
+          }
+        });
+      });
+    }
+    
+    // Tambah klien baru
+    async function addClient(clientData) {
+  try {
+    console.log("Adding client with data:", clientData);
+    
+    // Validasi data minimal
+    if (!clientData.username || !clientData.email || !clientData.password || !clientData.number || !clientData.address) {
+      throw new Error("Semua field harus diisi: nama, email, nomor telepon, alamat, dan password");
+    }
+    
+    // Email validation
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(clientData.email)) {
+      throw new Error("Format email tidak valid");
+    }
+    
+    // Password validation
+    if (clientData.password.length < 6) {
+      throw new Error("Password minimal 6 karakter");
+    }
+    
+    // Default type to 'client'
+    clientData.type = 'client';
+    
+    // Kirim data ke server
+    console.log("Sending data to server:", JSON.stringify(clientData));
+    
+    // Langsung kirim data tanpa pengecekan email/number terlebih dahulu
+    const response = await fetch('/api/crm', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(clientData)
     });
     
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Check authentication
-      const isAuthenticated = await checkAuthentication();
-      if (!isAuthenticated) return;
+    // Handle response
+    if (!response.ok) {
+      // Coba parse error message dari response
+      const errorText = await response.text();
+      let errorData;
       
-      // Load clients
-      loadClients();
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        console.error("Failed to parse error response:", e);
+      }
+      
+      if (errorData && (errorData.message || errorData.error)) {
+        throw new Error(errorData.message || errorData.error);
+      }
+      
+      throw new Error(`Gagal menambahkan klien: ${response.status} ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log("Client created successfully:", result);
+    
+    showAlert('Klien berhasil ditambahkan', 'success');
+    
+    // Reset form
+    document.getElementById('add-client-form').reset();
+    
+    // Close modal
+    const modal = document.getElementById('add-client-modal');
+    if (modal) modal.style.display = 'none';
+    
+    // Reload data
+    loadClients();
+    
+    return true;
+  } catch (error) {
+    console.error('Error adding client:', error);
+    showAlert(`Gagal menambahkan klien: ${error.message}`, 'danger');
+    return false;
+  }
+}
+    
+    // Event handler untuk toggle password visibility
+    function setupPasswordToggle() {
+      const passwordToggle = document.getElementById('password-toggle');
+      const passwordInput = document.getElementById('password');
+      
+      if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function() {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          // Toggle icon
+          const icon = this.querySelector('i');
+          if (type === 'password') {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          }
+        });
+      }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        logDebug("Initializing client page...");
+        
+        // Setup error handler global
+        window.addEventListener('error', function(event) {
+          console.error("Global error:", event.error);
+          showAlert(`Terjadi kesalahan: ${event.error.message}`, 'danger');
+        });
+        
+        // Cek autentikasi
+        const isAuthenticated = await API.auth.checkAuth();
+        if (!isAuthenticated) {
+          window.location.href = 'login.html';
+          return;
+        }
+        
+        // Debug API object
+        logDebug("API object:", typeof API !== 'undefined' ? 'Available' : 'Not available');
+        
+        // Setup komponen UI
+        setupPasswordToggle();
+        
+        // Setup tombol tambah klien dengan fixed event handler
+        const tambahKlienBtn = document.getElementById('tambah-klien-btn');
+        if (tambahKlienBtn) {
+          logDebug("Tambah klien button found");
+          tambahKlienBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logDebug("Tambah klien button clicked");
+            
+            // Manual modal opening
+            const modal = document.getElementById('add-client-modal');
+            if (modal) {
+              modal.style.display = 'flex';
+            } else {
+              console.error("Modal not found");
+            }
+          });
+        } else {
+          console.error("Tambah klien button not found");
+        }
+        
+        // Setup modal buttons
+        const closeModalBtn = document.getElementById('close-modal');
+        if (closeModalBtn) {
+          closeModalBtn.addEventListener('click', function() {
+            const modal = document.getElementById('add-client-modal');
+            if (modal) modal.style.display = 'none';
+          });
+        }
+        
+        const cancelBtn = document.getElementById('cancel-button');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function() {
+            const modal = document.getElementById('add-client-modal');
+            if (modal) modal.style.display = 'none';
+          });
+        }
+        
+        const saveClientBtn = document.getElementById('save-client-btn');
+        if (saveClientBtn) {
+          saveClientBtn.addEventListener('click', function() {
+            logDebug("Save client button clicked");
+            
+            const form = document.getElementById('add-client-form');
+            if (!form) {
+              console.error("Form not found");
+              return;
+            }
+            
+            // Check form validity
+            if (!form.checkValidity()) {
+              form.reportValidity();
+              return;
+            }
+            
+            // Get form data
+            const clientData = {
+              username: document.getElementById('username').value,
+              email: document.getElementById('email').value,
+              number: document.getElementById('number').value,
+              address: document.getElementById('address').value,
+              password: document.getElementById('password').value,
+              type: 'client'
+            };
+            
+            addClient(clientData);
+          });
+        }
+        
+        // Setup logout button
+        const logoutBtn = document.getElementById('logout-button');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userType');
+            window.location.href = 'login.html';
+          });
+        }
+        
+        // Load data klien
+        await loadClients();
+        
+        logDebug("Client page initialization complete");
+      } catch (error) {
+        console.error("Error initializing client page:", error);
+        showAlert(`Terjadi kesalahan saat memuat halaman: ${error.message}`, 'danger');
+      }
     });
   </script>
 </body>

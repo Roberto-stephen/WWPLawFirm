@@ -1031,7 +1031,7 @@ textarea.form-control {
 }
 
 .modal {
-  background-color: var(--light-color);
+  background-color: var(--primary-dark);
   border-radius: var(--border-radius-lg);
   width: 90%;
   max-width: 600px;
@@ -1040,6 +1040,7 @@ textarea.form-control {
   box-shadow: var(--shadow-xl);
   transform: scale(0.95);
   transition: transform var(--transition-normal);
+  color: var(--light-color);
 }
 
 .modal-backdrop[style*="display: flex"] .modal {
@@ -1048,13 +1049,13 @@ textarea.form-control {
 
 .modal-header {
   padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
-  background-color: var(--light-color);
+  background-color: var(--primary-color);
   z-index: 1;
 }
 
@@ -1062,12 +1063,13 @@ textarea.form-control {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   margin-bottom: 0;
+  color: var(--light-color);
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: var(--gray-600);
+  color: var(--light-color);
   font-size: 24px;
   cursor: pointer;
   width: 32px;
@@ -1080,8 +1082,8 @@ textarea.form-control {
 }
 
 .modal-close:hover {
-  background-color: var(--gray-200);
-  color: var(--gray-900);
+  background-color: rgba(255, 255, 255, 0.2);  /* Diubah dari var(--gray-200) */
+  color: var(--light-color);  /* Diubah dari var(--gray-900) */
 }
 
 .modal-body {
@@ -1090,13 +1092,13 @@ textarea.form-control {
 
 .modal-footer {
   padding: var(--spacing-md) var(--spacing-lg);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);  /* Diubah dari var(--gray-200) */
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-md);
   position: sticky;
   bottom: 0;
-  background-color: var(--light-color);
+  background-color: var(--primary-dark);  /* Diubah dari var(--light-color) */
   z-index: 1;
 }
 

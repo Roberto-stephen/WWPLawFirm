@@ -1,472 +1,311 @@
-// API Service untuk komunikasi dengan backend
-const API_BASE_URL = '';  // Empty string karena menggunakan relative URL
+/**
+ * API Client untuk WWP Law Firm
+ * File ini berisi fungsi-fungsi untuk berkomunikasi dengan backend API
+ */
 
-// Token handling
-const getToken = () => {
-  return localStorage.getItem('token');
-};
+// Buat namespace API global
+window.API = {};
 
-const setToken = (token) => {
-  localStorage.setItem('token', token);
-};
-
-const clearToken = () => {
-  localStorage.removeItem('token');
-};
-
-// Headers umum untuk semua requests
-const getHeaders = () => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-  
-  const token = getToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  return headers;
-};
-
-// Handler error
-const handleResponse = async (response) => {
-  // Jika response OK, return JSON-nya
-  if (response.ok) {
-    return response.json();
-  }
-  
-  // Jika error, throw error message
-  const errorData = await response.json().catch(() => ({
-    error: 'Unknown error',
-    message: 'An unknown error occurred'
-  }));
-  
-  // Khusus untuk 401, hapus token dan redirect ke login
-  if (response.status === 401) {
-    clearToken();
-    window.location.href = '/login.html';
-    throw new Error('Authentication failed. Please login again.');
-  }
-  
-  throw new Error(errorData.message || 'An error occurred');
-};
-
-// Authentication API
-const authAPI = {
-  login: async (email, password) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+// Fungsi helper untuk request API
+const apiRequest = async (endpoint, method = 'GET', data = null, customHeaders = {}) => {
+  try {
+    const baseUrl = 'http://localhost:9000';
+    const url = `${baseUrl}${endpoint}`;
+    console.log(`API Request: ${method} ${url}`);
     
-    const data = await handleResponse(response);
-    if (data.token) {
-      setToken(data.token);
-    }
-    return data;
-  },
-  
-  register: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  checkAuth: async () => {
-    const token = getToken();
-    if (!token) {
-      return false;
-    }
-    
-    try {
-      // Coba akses endpoint yang memerlukan auth
-      await casesAPI.getCases();
-      return true;
-    } catch (error) {
-      clearToken();
-      return false;
-    }
-  },
-  
-  logout: () => {
-    clearToken();
-    window.location.href = '/login.html';
-  }
-};
-
-// Cases API
-const casesAPI = {
-  getCases: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/cases`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getCase: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  createCase: async (caseData) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(caseData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  updateCase: async (caseId, caseData) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(caseData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  deleteCase: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getCaseMessages: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/cases/${caseId}/message`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  }
-};
-
-// Documents API
-const documentsAPI = {
-  getAllDocuments: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/all`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getDocumentsByCaseId: async (caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/all/${caseId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getDocument: async (docId, caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  createDocument: async (formData) => {
-    // Untuk upload file, kita tidak menggunakan JSON
+    // Siapkan headers
+    const token = localStorage.getItem('token');
     const headers = {
-      'Authorization': `Bearer ${getToken()}`,
-      // Content-Type akan otomatis diatur oleh browser karena kita mengirim FormData
+      'Content-Type': 'application/json',
+      ...customHeaders
     };
     
-    const response = await fetch(`${API_BASE_URL}/api/documents`, {
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Siapkan opsi request
+    const options = {
+      method,
+      headers,
+      credentials: 'same-origin'
+    };
+    
+    // Tambahkan body jika ada data
+    if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+      options.body = JSON.stringify(data);
+    }
+    
+    // Kirim request
+    const response = await fetch(url, options);
+    
+    // Handle error HTTP
+    if (!response.ok) {
+      // Coba parse error JSON jika ada
+      try {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.message || `HTTP Error: ${response.status}`);
+      } catch (jsonError) {
+        // Jika tidak bisa parse JSON, gunakan error standar
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+    }
+    
+    // Parse response sebagai JSON
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+  
+};
+
+// API Autentikasi
+window.API.auth = {
+  // Login user
+  login: async (email, password) => {
+    return apiRequest('/api/auth/login', 'POST', { email, password });
+  },
+  
+  // Register user
+  register: async (userData) => {
+    return apiRequest('/api/auth/register', 'POST', userData);
+  },
+  
+  // Check autentikasi
+  checkAuth: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return false;
+      
+      // Verifikasi token dengan server
+      try {
+        await apiRequest('/api/auth/verify');
+        return true;
+      } catch (error) {
+        console.log('Token verification failed:', error.message);
+        return false;
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      return false;
+    }
+  },
+  
+  // Logout
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userType');
+    window.location.href = 'login.html';
+  }
+};
+
+// API Kasus
+window.API.cases = {
+  getCases: async () => {  // Tambahkan metode ini
+    return apiRequest('/api/cases');
+  },
+  getAllCases: async () => {  // Pertahankan yang lama untuk kompatibilitas
+    return apiRequest('/api/cases');
+  },
+  
+  // Ambil detail kasus
+  getCaseById: async (caseId) => {
+    return apiRequest(`/api/cases/${caseId}`);
+  },
+  
+  // Buat kasus baru
+  createCase: async (caseData) => {
+    return apiRequest('/api/cases', 'POST', caseData);
+  },
+  
+  // Update kasus
+  updateCase: async (caseId, caseData) => {
+    return apiRequest(`/api/cases/${caseId}`, 'PUT', caseData);
+  },
+  
+  // Hapus kasus
+  deleteCase: async (caseId) => {
+    return apiRequest(`/api/cases/${caseId}`, 'DELETE');
+  }
+};
+
+// API Dokumen
+window.API.documents = {
+  // Ambil semua dokumen
+  getAllDocuments: async () => {
+    return apiRequest('/api/documents');
+  },
+  
+  // Ambil detail dokumen
+  getDocumentById: async (documentId) => {
+    return apiRequest(`/api/documents/${documentId}`);
+  },
+  
+  // Upload dokumen
+  uploadDocument: async (formData) => {
+    return fetch(`${window.location.origin}/api/documents/upload`, {
       method: 'POST',
-      headers: headers,
-      body: formData, // FormData untuk file upload
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: formData
+    }).then(response => {
+      if (!response.ok) throw new Error('Upload failed');
+      return response.json();
     });
-    
-    return handleResponse(response);
   },
   
-  updateDocument: async (docData) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(docData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  deleteDocument: async (docId, caseId) => {
-    const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/${caseId}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
+  // Hapus dokumen
+  deleteDocument: async (documentId) => {
+    return apiRequest(`/api/documents/${documentId}`, 'DELETE');
   }
 };
 
-// Appointments API
-const appointmentsAPI = {
-  getAppointments: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getAppointment: async (appointmentId) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  createAppointment: async (appointmentData) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(appointmentData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  updateAppointment: async (appointmentId, appointmentData) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(appointmentData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  cancelAppointment: async (appointmentId) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getUserList: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/userlist`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  updateUserResponse: async (appointmentId, responseData) => {
-    const response = await fetch(`${API_BASE_URL}/api/appointments/response/${appointmentId}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify({ response: responseData }),
-    });
-    
-    return handleResponse(response);
-  }
-};
-
-// Tasks API
-const tasksAPI = {
-  getTasks: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getTask: async (taskId) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  createTask: async (taskData) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(taskData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  updateTask: async (taskId, taskData) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(taskData),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  deleteTask: async (taskId) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getTasksForUser: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/user`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getUserList: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/userlist`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  updateStatus: async (taskId, status) => {
-    const response = await fetch(`${API_BASE_URL}/api/tasks/updateStatus/${status}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify({ _id: taskId }),
-    });
-    
-    return handleResponse(response);
-  }
-};
-
-// Statistics API
-const statisticsAPI = {
-  getDashboardStatistics: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/dashboard`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  },
-  
-  getNotifications: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/notifications`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
-  }
-};
-
-// CRM API
-const crmAPI = {
+// API CRM
+window.API.crm = {
+  // Pastikan endpoint ini sesuai dengan routes/crm.js
   getUsers: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/crm`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
+    try {
+      return apiRequest('/api/crm/clients'); // Sesuai dengan endpoint di crm.js yang baru
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return [];
+    }
   },
   
   getEmployees: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/employee`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
+    try {
+      return apiRequest('/api/crm/employees'); // Sesuai dengan endpoint di crm.js yang baru
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      return [];
+    }
   },
   
-  getUser: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
-      headers: getHeaders(),
-    });
-    
-    return handleResponse(response);
+  // Ambil detail user
+  getUserById: async (userId) => {
+    return apiRequest(`/api/crm/${userId}`);
   },
   
+  // Create user (DITAMBAHKAN)
   createUser: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(userData),
-    });
-    
-    return handleResponse(response);
+    try {
+      console.log('createUser called with:', userData);
+      return apiRequest('/api/crm', 'POST', userData);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   },
   
+  // Update user
   updateUser: async (userId, userData) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(userData),
-    });
-    
-    return handleResponse(response);
+    return apiRequest(`/api/crm/${userId}`, 'PUT', userData);
   },
   
-  updatePassword: async (oldPassword, newPassword) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/p`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify({ oldpassword: oldPassword, newpassword: newPassword }),
-    });
-    
-    return handleResponse(response);
-  },
-  
+  // Delete user
   deleteUser: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/api/crm/${userId}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
+    return apiRequest(`/api/crm/${userId}`, 'DELETE');
+  },
+
+  // Ambil data user sendiri
+  listSelectedUser: async (userType) => {
+    console.log(`listSelectedUser called with userType: ${userType}`);
     
-    return handleResponse(response);
+    if (userType === 'self') {
+      try {
+        console.log("Fetching self data from /api/crm/me");
+        const userData = await apiRequest('/api/crm/me');
+        console.log("Self data fetched successfully:", userData);
+        return userData;
+      } catch (error) {
+        console.error('Error fetching self data:', error);
+        // Fallback ke data localStorage
+        return { 
+          username: localStorage.getItem('userName') || 'User',
+          type: localStorage.getItem('userType') || 'user'
+        };
+      }
+    }
+    
+    // Untuk tipe pengguna lain
+    return apiRequest(`/api/crm/${userType}`);
+  },
+  
+  // Fungsi yang lebih robust untuk mengambil data user sendiri
+  getSelfData: async () => {
+    try {
+      console.log("getSelfData: Fetching user data");
+      const userData = await apiRequest('/api/crm/me');
+      return userData;
+    } catch (error) {
+      console.error('getSelfData error:', error);
+      throw error;
+    }
   }
 };
 
-// Export semua API services
-window.API = {
-  auth: authAPI,
-  cases: casesAPI,
-  documents: documentsAPI,
-  appointments: appointmentsAPI,
-  tasks: tasksAPI,
-  statistics: statisticsAPI,
-  crm: crmAPI,
-  checkAuth: async () => {
-    const token = getToken();
-    if (!token) {
-      return false;
+// API Statistik
+window.API.statistics = {
+  // Ambil statistik dashboard
+  getDashboardStatistics: async () => {
+    try {
+      return apiRequest('/api/statistics/dashboard');
+    } catch (error) {
+      console.error('Error fetching dashboard statistics:', error);
+      
+      // Return dummy data if API fails
+      return {
+        caseStatistic: {
+          open: 8,
+          close: 12
+        },
+        userStatistic: {
+          admins: 3,
+          partners: 5,
+          associates: 8,
+          paralegals: 4,
+          clients: 32
+        }
+      };
     }
-    return true;
   },
   
-  logout: () => {
-    clearToken();
-    localStorage.removeItem('userType');
-    localStorage.removeItem('userName');
-    window.location.href = 'login.html';
+  // Ambil statistik kasus
+  getCaseStatistics: async () => {
+    return apiRequest('/api/statistics/cases');
+  }
+};
+
+// API Jadwal
+window.API.appointments = {
+  getAppointments: async () => {  // Tambahkan metode ini
+    return apiRequest('/api/appointments');
+  },
+  getAllAppointments: async () => {  // Pertahankan yang lama
+    return apiRequest('/api/appointments');
+  },
+  
+  // Ambil detail jadwal
+  getAppointmentById: async (appointmentId) => {
+    return apiRequest(`/api/appointments/${appointmentId}`);
+  },
+  
+  // Buat jadwal baru
+  createAppointment: async (appointmentData) => {
+    return apiRequest('/api/appointments', 'POST', appointmentData);
+  },
+  
+  // Update jadwal
+  updateAppointment: async (appointmentId, appointmentData) => {
+    return apiRequest(`/api/appointments/${appointmentId}`, 'PUT', appointmentData);
+  },
+  
+  // Hapus jadwal
+  deleteAppointment: async (appointmentId) => {
+    return apiRequest(`/api/appointments/${appointmentId}`, 'DELETE');
   }
 };

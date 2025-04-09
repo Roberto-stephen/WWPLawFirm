@@ -1,66 +1,94 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose
+const Schema = mongoose.Schema;
 
-const validateArrayLength = (value) => {
-    if (!Array.isArray(value) || value.length == 0) {
-        return false;
-    }
-    return true
-}
-// Schema
 const caseSchema = new Schema({
-    case_title: {
-        type: String,
-        required: [true, "Case_title should not be null"],
+  title: {
+    type: String,
+    required: [true, 'Judul kasus diperlukan'],
+    trim: true
+  },
+  description: {
+    type: String,
+    required: [true, 'Deskripsi kasus diperlukan']
+  },
+  caseNumber: {
+    type: String,
+    required: [true, 'Nomor kasus diperlukan'],
+    unique: true,
+    trim: true
+  },
+  caseType: {
+    type: String,
+    required: [true, 'Tipe kasus diperlukan'],
+    enum: ['Perdata', 'Pidana', 'Tata Usaha Negara', 'Lainnya']
+  },
+  client: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Klien diperlukan']
+  },
+  assignedLawyers: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  status: {
+    type: String,
+    enum: ['open', 'in_progress', 'pending', 'closed', 'won', 'lost'],
+    default: 'open'
+  },
+  court: {
+    type: String,
+    trim: true
+  },
+  startDate: {
+    type: Date,
+    required: [true, 'Tanggal mulai diperlukan']
+  },
+  endDate: {
+    type: Date
+  },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high', 'urgent'],
+    default: 'medium'
+  },
+  documents: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Document'
+  }],
+  notes: {
+    type: String
+  },
+  fees: {
+    amount: Number,
+    currency: {
+      type: String,
+      default: 'IDR'
     },
-    case_created_by: {
-        type: String,
-        required: [true, "Case_created_by should not be null"],
+    status: {
+      type: String,
+      enum: ['unpaid', 'partial', 'paid'],
+      default: 'unpaid'
     },
-    case_description: {
-        type: String,
-        required: [true, "Case_description should not be null"],
-    },
-    case_type: {
-        type: String,
-        required: [true, "Case_type should not be null"],
-    },
-    case_status: {
-        type: String,
-        required: [true, "Case_status should not be null"],
-    },
-    case_priority: {
-        type: String,
-        required: [true, "Case_priority should not be null"],
-    },
-    case_total_billed_hour: {
-        type: Number,
-        required: [true, "Case_total_billed_hour should not be null"],
-    },
-    case_member_list: {
-        type: [
-            {
-                case_member_id: {
-                    type: String,
-                    required: true,
-                },
-                case_member_type: {
-                    type: String,
-                    required: true,
-                },
-                case_member_role: {
-                    type: String,
-                    required: true,
-                },
-            }],
-        validate: {
-            validator: validateArrayLength,
-            message: "Case_member_list should not be empty array"
-        }
-    }
-})
+    details: String
+  },
+  hearings: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Hearing'
+  }]
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
-// Model
+// Indexes
+caseSchema.index({ title: 'text', description: 'text', caseNumber: 'text' });
+caseSchema.index({ client: 1 });
+caseSchema.index({ status: 1 });
+caseSchema.index({ caseType: 1 });
+caseSchema.index({ startDate: 1 });
+
 const CaseModel = mongoose.model('Case', caseSchema);
 
-module.exports = CaseModel
+module.exports = CaseModel;

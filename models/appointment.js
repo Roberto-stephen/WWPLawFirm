@@ -1,58 +1,75 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose
+const Schema = mongoose.Schema;
 
 const appointmentSchema = new Schema({
-  creator: {
-    type: String,
-    required: true,
-  },
   title: {
     type: String,
-    required: true,
+    required: [true, 'Judul janji temu diperlukan'],
+    trim: true
   },
-  attendees: [
-    {
-      name: {
-        type: String,
-        required: true,
-      },
-      response: {
-        type: String,
-        enum: ['accepted', 'pending', 'declined'],    // The valid value for the response
-        required: true,
-      },
+  client: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Klien diperlukan']
+  },
+  lawyer: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Pengacara diperlukan']
+  },
+  date: {
+    type: Date,
+    required: [true, 'Tanggal janji temu diperlukan']
+  },
+  time: {
+    start: {
+      type: String,
+      required: [true, 'Waktu mulai janji temu diperlukan']
     },
-  ],
+    end: {
+      type: String
+    }
+  },
   location: {
     type: String,
-    required: true,
+    required: [true, 'Lokasi janji temu diperlukan']
   },
-  dateStart: {
+  purpose: {
     type: String,
-    required: true,
+    required: [true, 'Tujuan janji temu diperlukan']
   },
-  dateEnd: {
-    type: String,
-    required: true,
-  },
-  timeStart: {
-    type: String,
-  },
-  timeEnd: {
-    type: String,
-  },
-  details: {
-    type: String,
-    required: true,
+  notes: {
+    type: String
   },
   status: {
     type: String,
-    enum: ['scheduled', 'cancelled'],   // The valid value for the status
-    required: true,
+    enum: ['pending', 'confirmed', 'completed', 'canceled', 'rescheduled'],
+    default: 'pending'
   },
+  case: {
+    type: Schema.Types.ObjectId,
+    ref: 'Case'
+  },
+  reminder: {
+    isSent: {
+      type: Boolean,
+      default: false
+    },
+    time: {
+      type: Date
+    }
+  }
+}, {
+  timestamps: true
 });
 
-// Model
+// Indexes
+appointmentSchema.index({ client: 1 });
+appointmentSchema.index({ lawyer: 1 });
+appointmentSchema.index({ date: 1 });
+appointmentSchema.index({ status: 1 });
+appointmentSchema.index({ case: 1 });
+
 const AppointmentModel = mongoose.model('Appointment', appointmentSchema);
 
-module.exports = AppointmentModel;  
+module.exports = AppointmentModel;

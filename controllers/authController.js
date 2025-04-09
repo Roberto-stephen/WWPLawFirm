@@ -82,13 +82,25 @@ const loginUser = async (req, res) => {
         const match = await user.validatePassword(password);
         
         if (match) {
-            // Buat token
+            // Update lastLogin timestamp
+            user.lastLogin = new Date();
+            await user.save();
+            
+            // Buat token dengan masa aktif yang lebih lama (24 jam)
             const token = jwt.sign({
                 email: user.email,
                 userId: user._id,
                 name: user.username,
                 type: user.type
-            }, process.env.JWT_SECRET, { expiresIn: '2h' });
+            }, process.env.JWT_SECRET, { expiresIn: '24h' });
+            
+            // Set cookie juga untuk keamanan tambahan
+            res.cookie('token', token, {
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000, // 24 jam
+                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production'
+            });
             
             // Kirim token dan info user
             return res.status(200).json({
@@ -110,8 +122,38 @@ const loginUser = async (req, res) => {
     }
 };
 
+// Endpoint baru untuk verifikasi token
+const verifyToken = (req, res) => {
+    // Token sudah diverifikasi oleh middleware requireAuth
+    // Jika sudah sampai di sini, berarti token valid
+    return res.status(200).json({
+        valid: true,
+        user: {
+            userId: req.user.userId,
+            name: req.user.name,
+            type: req.user.type
+        }
+    });
+};
+
+const setUserInfo = (req, res, next) => {
+    try {
+      if (req.user) {
+        res.locals.userInfo = {
+          userId: req.user.userId,
+          name: req.user.name,
+          type: req.user.type
+        };
+      }
+      next();
+    } catch (error) {
+      console.error("Error setting user info:", error);
+      next();
+    }
+  };
+
 const readUser = (req, res) => {
     // Implementasi dapat ditambahkan sesuai kebutuhan
 };
 
-module.exports = { test, registerUser, loginUser, readUser };
+module.exports = { test, registerUser, loginUser, readUser, verifyToken, setUserInfo };

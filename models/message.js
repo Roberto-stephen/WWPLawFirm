@@ -1,43 +1,54 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose
+const Schema = mongoose.Schema;
 
-const validateArrayLength = (value) => {
-    if (!Array.isArray(value) || value.length == 0) {
-        return false;
-    }
-    return true
-}
-// Schema
 const messageSchema = new Schema({
-    message_list: {
-        type: [
-            {
-                message_sender_id: {
-                    type: String,
-                },
-                message_sender_name: {
-                    type: String,
-                },
-                message_sender_avatar: {
-                    type: String,
-                },
-                message_type: {
-                    type: String,
-                },
-                message: {
-                    type: String,
-                },
-                message_sent_date: {
-                    type: String,
-                },
-            }],
-    },
-    message_case_id: {
-        type: String,
-    },
-})
+  sender: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Pengirim pesan diperlukan']
+  },
+  receiver: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Penerima pesan diperlukan']
+  },
+  case: {
+    type: Schema.Types.ObjectId,
+    ref: 'Case'
+  },
+  content: {
+    type: String,
+    required: [true, 'Konten pesan diperlukan']
+  },
+  attachments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Document'
+  }],
+  isRead: {
+    type: Boolean,
+    default: false
+  },
+  readAt: {
+    type: Date
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, {
+  timestamps: true
+});
 
-// Model
-const messageModel = mongoose.model('message', messageSchema);
+// Indexes
+messageSchema.index({ sender: 1, receiver: 1 });
+messageSchema.index({ case: 1 });
+messageSchema.index({ isRead: 1 });
+messageSchema.index({ createdAt: 1 });
 
-module.exports = messageModel
+const MessageModel = mongoose.model('Message', messageSchema);
+
+module.exports = MessageModel;

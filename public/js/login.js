@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Dapatkan URL absolut
     const baseUrl = window.location.origin; // https://yoursite.vercel.app
-    const loginUrl = `${baseUrl}/auth/login`;
+    const loginUrl = `${baseUrl}/api/auth/login`;
     
     console.log('Mencoba login dengan:', email);
     console.log('URL login:', loginUrl);

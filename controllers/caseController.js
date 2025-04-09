@@ -31,8 +31,8 @@ const checkCaseAccess = async (userId, type, caseId) => {
 }
 
 const createCase = async (req, res) => {
-    const { type }  = getUserInfo(res);
-    const userInfo = getUserInfo(res);
+    const { type }  = getUserInfo(req);
+    const userInfo = getUserInfo(req);
 
     const {
         case_title,
@@ -100,7 +100,7 @@ const createCase = async (req, res) => {
 // }
 
 // const editCase = async (req, res) => {
-//     const { userId, type } = getUserInfo(res);
+//     const { userId, type } = getUserInfo(req);
 //     const caseId = req.params.id; // Extracting the case ID from the request parameters
 
 //     try {
@@ -149,7 +149,7 @@ const createCase = async (req, res) => {
 // };
 
 const editCase = async (req, res) => {
-    const { userId, type } = getUserInfo(res);
+    const { userId, type } = getUserInfo(req);
     const caseId = req.params.id; // Extracting the case ID from the request parameters
 
     console.log(type);
@@ -209,7 +209,7 @@ const editCase = async (req, res) => {
 
 
 const readCase = async (req, res) => {
-    const { userId, type } = getUserInfo(res)
+    const { userId, type } = getUserInfo(req)
     const caseId = req.params.id
 
     try {
@@ -252,7 +252,7 @@ const readCase = async (req, res) => {
 }
 
 const readCaseMessage = async (req, res) => {
-    const { userId, type } = getUserInfo(res)
+    const { userId, type } = getUserInfo(req)
     const caseId = req.params.id
 
     try {
@@ -284,7 +284,7 @@ const readCaseMessage = async (req, res) => {
 }
 
 const listCase = async (req, res) => {
-    const { userId, type } = getUserInfo(res)
+    const { userId, type } = getUserInfo(req)
     try {
         let cases;
         if (type === "admin")
@@ -297,10 +297,14 @@ const listCase = async (req, res) => {
                 }
             )
 
+        // Jika tidak ada kasus, kirim array kosong daripada error
         if (!cases || cases.length === 0)
-            throw new DataNotExistError("Case not exist")
-        return res.status(200).send(cases)
+            return res.status(200).json([]);
+        
+        return res.status(200).json(cases);
     } catch (error) {
+        console.error('Error in listCase:', error);
+        
         if (error instanceof mongoose.Error.ValidationError) {
             // Mongoose validation error
             const validationErrors = {};
@@ -314,73 +318,19 @@ const listCase = async (req, res) => {
                 error: 'Validation failed',
                 validationErrors,
             });
+        } else {
+            // Handle all other errors
+            return res.status(500).json({
+                error: error.name || 'Unknown error',
+                message: error.message || 'Terjadi kesalahan saat memuat data kasus'
+            });
         }
     }
 }
 
 
-// const deleteCase = (req, res) => {
-//     res.status(200).send({
-//         message: "deleteCase"
-//     })
-// }
-
-// const deleteCase = async (req, res) => {
-//     const { userId, type } = getUserInfo(res);
-//     const caseId = req.params.id;
-
-//     try {
-//         let deletedCase;
-
-//         if (type === "admin") {
-//             // For admin, directly delete by caseId
-//             deletedCase = await Case.findByIdAndDelete(caseId);
-//         } else {
-//             // For non-admin users, validate the user's access before deletion
-//             await checkCaseAccess(userId, type, caseId);
-//             deletedCase = await Case.findOneAndDelete({
-//                 _id: caseId,
-//                 "case_member_list.case_member_id": userId,
-//                 "case_member_list.case_member_type": type
-//             });
-//         }
-
-//         if (!deletedCase) {
-//             return res.status(404).json({
-//                 error: 'Case not found'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             message: 'Case deleted successfully',
-//             deletedCase
-//         });
-//     } catch (error) {
-//         if (error instanceof mongoose.Error.ValidationError) {
-//             // Mongoose validation error
-//             const validationErrors = {};
-
-//             for (const field in error.errors) {
-//                 if (!error.errors[field].message.includes("Cast to [ObjectId] failed for value")) {
-//                     validationErrors[field] = error.errors[field].message;
-//                 }
-//             }
-
-//             return res.status(400).json({
-//                 error: 'Validation failed',
-//                 validationErrors,
-//             });
-//         } else {
-//             return res.status(400).json({
-//                 error: error.name,
-//                 message: error.message
-//             });
-//         }
-//     }
-// }
-
 const deleteCase = async (req, res) => {
-    const { type } = getUserInfo(res);
+    const { type } = getUserInfo(req);
     const caseId = req.params.id;
 
     console.log(type);
@@ -431,6 +381,17 @@ const deleteCase = async (req, res) => {
 }
 
 
+
+
 module.exports = {
-    createCase, readCase, listCase, editCase, deleteCase, readCaseMessage
+    createCase,
+    readCase,
+    listCase,
+    editCase, 
+    deleteCase,
+    readCaseMessage,
+    // Tambahkan alias untuk fungsi yang dibutuhkan route:
+    getCases: listCase,
+    getCase: readCase,
+    updateCase: editCase
 };

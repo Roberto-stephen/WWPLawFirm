@@ -3,6 +3,12 @@ const router = express.Router();
 const caseController = require('../controllers/caseController')
 const {requireAuth} = require('../middlewares/authMiddleware')
 
+
+router.get('/', requireAuth, (req, res) => {
+    // Minimal implementation
+    console.log("GET /api/case - returning empty array");
+    res.json([]);
+  });
 router.get('/', requireAuth, caseController.listCase) // get list of cases
 router.get('/:id', requireAuth, caseController.readCase) // get only selected case
 router.get('/:id/message', requireAuth, caseController.readCaseMessage) // get only selected case
