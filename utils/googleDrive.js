@@ -14,6 +14,8 @@ const options = {
   height: 600,
 };
 
+console.log('Google Drive integration disabled for production');
+
 // Function to provide access to the Google Drive API
 async function authorize() {
   const jwtClient = new google.auth.JWT(
@@ -86,4 +88,22 @@ async function deleteFile(authClient, fileIdToBeDeleted) {
   });
 }
 
-module.exports = { authorize, uploadFile, deleteFile };
+module.exports = {
+  uploadFile: async () => {
+    console.log('Google Drive upload disabled');
+    return { id: 'dummy-id', webViewLink: '#' };
+  },
+  createFolder: async () => {
+    console.log('Google Drive folder creation disabled');
+    return { id: 'dummy-folder-id' };
+  },
+  // Tambahkan fungsi lain yang digunakan di aplikasi
+  downloadFile: async () => {
+    console.log('Google Drive download disabled');
+    return Buffer.from('');
+  },
+  deleteFile: async () => {
+    console.log('Google Drive delete disabled');
+    return true;
+  }
+};

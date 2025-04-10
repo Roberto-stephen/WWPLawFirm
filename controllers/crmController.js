@@ -6,7 +6,6 @@ const User = require('../models/user');
 const mongoose = require('mongoose');
 const { promisify } = require('util')
 const Case = require('../models/case');
-const googleDrive = require('../utils/googleDrive');
 const unlinkAsync = promisify(fs.unlink)
 const { userInfo } = require('os');
 const { cloudinary } = require('../config/cloudinary');
