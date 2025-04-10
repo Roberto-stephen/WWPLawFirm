@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
 const http = require('http');
-const socketIo = require('socket.io');
+// const socketIo = require('socket.io');  // Komentar untuk sementara
 const morgan = require('morgan');
 const fs = require('fs');
 require('dotenv').config();
@@ -15,11 +15,10 @@ const connectDB = require('./config/database');
 const { errorHandler } = require('./middlewares/errorMiddleware');
 const { requireAuth } = require('./middlewares/authMiddleware');
 
-
 // Initialize app
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+// const io = socketIo(server);  // Komentar untuk sementara
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
@@ -118,20 +117,20 @@ app.get(/^(?!\/api)(?!\/)(?!\/login\.html).*/, (req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-// Setup WebSocket handlers
-const socketHandlers = require('./socketHandler');
+// Komentar kode WebSocket
+// const socketHandlers = require('./socketHandler');
 
-io.on('connection', (socket) => {
-  console.log('New client connected');
-  
-  socket.on('join-room', (data) => socketHandlers.joinRoomHandlers(io, socket, data));
-  socket.on('case-message', (data) => socketHandlers.caseMessageHandlers(io, socket, data));
-  socket.on('disconnect', () => socketHandlers.disconnectHandlers(io, socket));
-  
-  socket.on('error', (error) => {
-    console.error('Socket error:', error);
-  });
-});
+// io.on('connection', (socket) => {
+//   console.log('New client connected');
+//   
+//   socket.on('join-room', (data) => socketHandlers.joinRoomHandlers(io, socket, data));
+//   socket.on('case-message', (data) => socketHandlers.caseMessageHandlers(io, socket, data));
+//   socket.on('disconnect', () => socketHandlers.disconnectHandlers(io, socket));
+//   
+//   socket.on('error', (error) => {
+//     console.error('Socket error:', error);
+//   });
+// });
 
 // Connect to MongoDB dan jalankan server
 const startServer = async () => {
