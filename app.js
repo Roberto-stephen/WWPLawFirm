@@ -66,10 +66,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes - menggunakan jalur yang benar sesuai struktur folder
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/crm', require('./routes/crm'));
+// app.use('/api/crm', require('./routes/crm'));
 app.use('/api/cases', require('./routes/admin/cases'));  // Tambahkan ini
 app.use('/api/appointments', require('./routes/appointment'));  // Tambahkan ini
-app.use('/api/documents', require('./routes/document'));
+// app.use('/api/documents', require('./routes/document'));
 
 // Membuat API endpoint sederhana untuk notifikasi
 app.get('/api/notifications', requireAuth, (req, res) => {
