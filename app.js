@@ -27,8 +27,7 @@ app.use(helmet.contentSecurityPolicy({
     styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
     fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
     imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://*"],
-    connectSrc: ["'self'", "http://localhost:9000", "https://*"],
-    workerSrc: ["'self'", "blob:"]
+    connectSrc: ["'self'", "https://*", "http://localhost:9000"]
   }
 }));
 
