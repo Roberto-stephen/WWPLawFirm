@@ -8,6 +8,7 @@ const socketIo = require('socket.io');
 const morgan = require('morgan');
 const fs = require('fs');
 require('dotenv').config();
+const helmet = require('helmet');
 
 // Import dependencies
 const connectDB = require('./config/database');
@@ -19,6 +20,17 @@ const { requireAuth } = require('./middlewares/authMiddleware');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-eval'", "https://cdnjs.cloudflare.com"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+    fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
+    imgSrc: ["'self'", "data:"],
+    connectSrc: ["'self'"]
+  }
+}));
 
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
@@ -40,7 +52,9 @@ if (process.env.NODE_ENV === 'production') {
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : true,
+  origin: process.env.NODE_ENV === 'production' 
+    ? [process.env.CLIENT_URL, 'https://wwplawfirm.onrender.com'] 
+    : true,
   credentials: true
 }));
 app.use(express.json());
@@ -86,8 +100,18 @@ app.get('/api/statistics/dashboard', requireAuth, (req, res) => {
   }
 });
 
-// Fallback untuk SPA - semua route non-API diarahkan ke index.html
-app.get(/^(?!\/api).*/, (req, res) => {
+// Route khusus untuk login.html
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Root path sudah benar, arahkan ke login.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Ubah regex fallback agar tidak menangkap login.html
+app.get(/^(?!\/api)(?!\/)(?!\/login\.html).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
