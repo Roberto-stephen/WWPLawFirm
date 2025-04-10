@@ -23,11 +23,12 @@ const server = http.createServer(app);
 app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-eval'", "https://cdnjs.cloudflare.com"],
+    scriptSrc: ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
     styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
     fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
-    imgSrc: ["'self'", "data:"],
-    connectSrc: ["'self'"]
+    imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://*"],
+    connectSrc: ["'self'", "http://localhost:9000", "https://*"],
+    workerSrc: ["'self'", "blob:"]
   }
 }));
 
